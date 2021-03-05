@@ -25,7 +25,7 @@ import org.eclipse.birt.report.engine.nLayout.area.style.BoxStyle;
 import org.eclipse.birt.report.engine.nLayout.area.style.TextStyle;
 import org.eclipse.birt.report.engine.ooxml.writer.OOXmlWriter;
 
-import com.lowagie.text.Font;
+import com.itextpdf.io.font.constants.FontStyles;
 
 public class TextWriter
 {
@@ -411,8 +411,8 @@ public class TextWriter
 		}
 		writer.attribute( "sz",  canvas.getScaledValue( info.getFontSize( ) * 100 ) );
 		
-		boolean isItalic = ( info.getFontStyle( ) & Font.ITALIC ) != 0;
-		boolean isBold = ( info.getFontStyle( ) & Font.BOLD ) != 0;
+		boolean isItalic = ( info.getFontStyle( ) & FontStyles.ITALIC ) != 0;
+		boolean isBold = ( info.getFontStyle( ) & FontStyles.BOLD ) != 0;
 		if ( isItalic )
 		{
 			writer.attribute( "i", 1 );

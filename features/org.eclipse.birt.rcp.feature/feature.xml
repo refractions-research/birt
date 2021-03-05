@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.birt.rcp"
       label="%featureName"
-      version="4.11.0.qualifier"
+      version="4.18.0.qualifier"
       provider-name="%providerName"
       image="eclipse_update_120.jpg">
 
@@ -119,14 +119,6 @@
 
    <plugin
          id="org.eclipse.birt.report.designer.ui.rcp"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.birt.axis.overlay"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -430,14 +422,6 @@
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.birt.report.designer.ui.preview.web"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.birt.report.designer.ui.samples.rcp"
          download-size="0"
          install-size="0"
@@ -710,14 +694,6 @@
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.birt.report.viewer"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.birt.resources"
          download-size="0"
          install-size="0"
@@ -732,7 +708,7 @@
          version="0.0.0"
          fragment="true"
          unpack="false"/>
-         
+
    <plugin
          id="org.w3c.dom.svg.extension"
          download-size="0"

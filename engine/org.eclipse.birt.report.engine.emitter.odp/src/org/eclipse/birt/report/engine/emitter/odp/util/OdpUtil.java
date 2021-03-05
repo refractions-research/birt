@@ -24,7 +24,8 @@ import org.eclipse.birt.report.engine.emitter.IEmitterServices;
 import org.eclipse.birt.report.engine.nLayout.area.IArea;
 import org.eclipse.birt.report.engine.odf.style.HyperlinkInfo;
 
-import com.lowagie.text.pdf.BaseFont;
+import com.itextpdf.kernel.font.PdfFont;
+
 
 
 public class OdpUtil
@@ -88,9 +89,9 @@ public class OdpUtil
 		return buffer.toString( );
 	}
 
-	public static String getFontName( BaseFont baseFont )
+	public static String getFontName( PdfFont baseFont )
 	{
-		String[][] familyFontNames = baseFont.getFamilyFontName( );
+		String[][] familyFontNames = baseFont.getFontProgram().getFontNames().getFamilyName();
 		String[] family = familyFontNames[familyFontNames.length - 1];
 		return family[family.length - 1];
 	}

@@ -23,6 +23,7 @@ import java.util.regex.Matcher;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Name;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -41,7 +42,7 @@ public class HyperlinksTest extends CellRangeTester {
         assertEquals( name,namedRange.getNameName() );
         assertEquals( sheetIndex, namedRange.getSheetIndex() );
         
-        AreaReference ref = new AreaReference( namedRange.getRefersToFormula() );
+        AreaReference ref = new AreaReference( namedRange.getRefersToFormula(), workbook.getSpreadsheetVersion() );
         
         if( ( row1 == row2 ) && ( col1 == col2 ) ) {
         	assertTrue( ref.isSingleCell() );
@@ -89,7 +90,7 @@ public class HyperlinksTest extends CellRangeTester {
             
             for( Row row : sheet ) {
             	for( Cell cell : row ) {
-            		if(cell.getCellType() == Cell.CELL_TYPE_STRING) {
+            		if(cell.getCellType() == CellType.STRING) {
             			String cellValue = cell.getStringCellValue();
             			Matcher matcher = pattern.matcher(cellValue);
             			if( matcher.matches() ) {
@@ -144,7 +145,7 @@ public class HyperlinksTest extends CellRangeTester {
             
             for( Row row : sheet ) {
             	for( Cell cell : row ) {
-            		if(cell.getCellType() == Cell.CELL_TYPE_STRING) {
+            		if(cell.getCellType() == CellType.STRING) {
             			String cellValue = cell.getStringCellValue();
             			
             			Matcher matcher = pattern.matcher(cellValue);

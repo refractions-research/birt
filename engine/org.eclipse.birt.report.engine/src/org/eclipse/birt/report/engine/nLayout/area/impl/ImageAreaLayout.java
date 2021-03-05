@@ -42,8 +42,8 @@ import org.eclipse.birt.report.engine.nLayout.area.ILayout;
 import org.eclipse.birt.report.engine.nLayout.area.style.BoxStyle;
 
 import com.ibm.icu.util.ULocale;
-import com.lowagie.text.BadElementException;
-import com.lowagie.text.Image;
+import com.itextpdf.io.image.ImageData;
+import com.itextpdf.io.image.ImageDataFactory;
 
 public class ImageAreaLayout implements ILayout
 {
@@ -52,7 +52,7 @@ public class ImageAreaLayout implements ILayout
 	private ContainerArea parent;
 	private IImageContent content;
 	private ImageReader reader;
-	private Image imageObject = null;
+	private ImageData imageObject = null;
 	private LayoutContext context;
 
 	protected static Logger logger = Logger.getLogger( ImageAreaLayout.class
@@ -99,7 +99,7 @@ public class ImageAreaLayout implements ILayout
 				{
 					try
 					{
-						imageObject = Image.getInstance( reader.getByteArray( ) );
+						imageObject = ImageDataFactory.create( reader.getByteArray( ) );
 					}
 					catch ( Exception e )
 					{
@@ -239,12 +239,12 @@ public class ImageAreaLayout implements ILayout
 		 * @throws BadElementException
 		 */
 		protected Dimension getIntrinsicDimension( IImageContent content,
-				Image image )
+				ImageData image )
 		{
 			if ( image != null )
 			{
-				return new Dimension( (int) ( image.getPlainWidth( ) * 1000
-						/ resolutionX * 72 ), (int) ( image.getPlainHeight( )
+				return new Dimension( (int) ( image.getWidth( ) * 1000
+						/ resolutionX * 72 ), (int) ( image.getHeight( )
 						* 1000 / resolutionY * 72 ) );
 			}
 			return null;

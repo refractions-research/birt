@@ -8,7 +8,7 @@
       <category name="ChartSDK"/>
    </feature>
    -->
-   <feature url="features/org.eclipse.birt.chart_4.11.0.qualifier.jar" id="org.eclipse.birt.chart" version="4.11.0.qualifier">
+   <feature url="features/org.eclipse.birt.chart_4.18.0.qualifier.jar" id="org.eclipse.birt.chart" version="4.18.0.qualifier">
       <category name="ChartEngine"/>
    </feature>
    <bundle id="com.ibm.icu">

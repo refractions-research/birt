@@ -19,12 +19,12 @@ import java.util.Map;
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
 
-import junit.framework.TestCase;
-
 import org.xml.sax.SAXException;
 
-import com.lowagie.text.Font;
-import com.lowagie.text.pdf.BaseFont;
+import com.itextpdf.io.font.constants.FontStyles;
+import com.itextpdf.kernel.font.PdfFont;
+
+import junit.framework.TestCase;
 
 public class FontConfigReaderTest extends TestCase
 {
@@ -237,14 +237,14 @@ public class FontConfigReaderTest extends TestCase
 	private boolean isMappedTo( char c, String from, String to )
 	{
 		FontHandler handler = new FontHandler( fontMappingManager,
-				new String[]{from}, Font.NORMAL, true );
-		BaseFont font = handler.getMappedFont( c );
+				new String[]{from}, FontStyles.NORMAL, true );
+		PdfFont font = handler.getMappedFont( c );
 		return hasName( font, to );
 	}
 
-	private boolean hasName( BaseFont font, String fontName )
+	private boolean hasName( PdfFont font, String fontName )
 	{
-		String[][] familyFontNames = font.getFullFontName( );
+		String[][] familyFontNames = font.getFontProgram().getFontNames().getFamilyName( );
 		for ( int i = 0; i < familyFontNames.length; i++ )
 		{
 			for ( int j = 0; j < familyFontNames[i].length; j++ )

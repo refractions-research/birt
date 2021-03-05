@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.birt.osgi.runtime"
       label="%featureName"
-      version="4.11.0.qualifier"
+      version="4.18.0.qualifier"
       provider-name="%providerName"
       image="eclipse_update_120.jpg">
 
@@ -131,12 +131,6 @@
          version="0.0.0"/>
 
    <plugin
-         id="org.eclipse.birt.report.viewer"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
          id="org.eclipse.birt.report.engine.dataextraction"
          download-size="0"
          install-size="0"
@@ -198,7 +192,7 @@
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-         
+
    <plugin
          id="org.eclipse.birt.data.oda.mongodb.ui"
          download-size="0"
@@ -211,31 +205,6 @@
          download-size="0"
          install-size="0"
          version="0.0.0"
-         unpack="false"/>
-         
-   <plugin
-         id="javax.xml.rpc"
-         download-size="0"
-         install-size="0"
-         version="1.1.0.qualifier"/>
-
-   <plugin
-         id="javax.xml.soap"
-         download-size="0"
-         install-size="0"
-         version="1.2.0.qualifier"/>
-
-   <plugin
-         id="org.apache.axis"
-         download-size="0"
-         install-size="0"
-         version="1.4.0.qualifier"/>
-
-   <plugin
-         id="javax.wsdl"
-         download-size="0"
-         install-size="0"
-         version="1.5.1.qualifier"
          unpack="false"/>
 
    <plugin
@@ -313,13 +282,6 @@
          unpack="false"/>
 
    <plugin
-         id="org.apache.batik.ext.awt"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.apache.batik.parser"
          download-size="0"
          install-size="0"
@@ -335,13 +297,6 @@
 
    <plugin
          id="org.apache.batik.util"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.apache.batik.util.gui"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -621,13 +576,6 @@
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.birt.axis.overlay"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.birt.me.prettyprint.hector"
          download-size="0"
          install-size="0"
@@ -645,7 +593,7 @@
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-         
+
    <plugin
          id="org.w3c.dom.svg.extension"
          download-size="0"
@@ -653,5 +601,5 @@
          version="0.0.0"
          fragment="true"
          unpack="false"/>
-         
+
 </feature>

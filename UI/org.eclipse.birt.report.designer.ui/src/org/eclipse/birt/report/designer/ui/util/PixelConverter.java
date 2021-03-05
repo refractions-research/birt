@@ -11,12 +11,11 @@
 
 package org.eclipse.birt.report.designer.ui.util;
 
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Control;
-
-import org.eclipse.jface.dialogs.Dialog;
 
 /**
  * A tool class to help with pixel unit convertion.

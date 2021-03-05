@@ -40,8 +40,7 @@ import org.eclipse.birt.report.engine.layout.area.impl.ImageArea;
 import org.eclipse.birt.report.engine.layout.pdf.util.PropertyUtil;
 import org.eclipse.birt.report.engine.util.FlashFile;
 
-import com.lowagie.text.BadElementException;
-import com.lowagie.text.Image;
+import com.itextpdf.io.image.ImageData;
 
 public class ImageLayout extends Layout
 {
@@ -93,7 +92,7 @@ public class ImageLayout extends Layout
 		checkObjectType( );
 		// choose the layout manager
 		IImageContent imageContent = (IImageContent) content;
-		Image imageObject = null;
+		ImageData imageObject = null;
 		boolean isFlash = FlashFile.isFlash( imageContent.getMIMEType( ),
 				imageContent.getURI( ), imageContent.getExtension( ) );
 		if ( !isFlash )
@@ -178,7 +177,7 @@ class ConcreteImageLayout extends Layout
 
 	private boolean fitToContainer = false;
 
-	private Image imageObject = null;
+	private ImageData imageObject = null;
 	
 	protected final static int DEFAULT_WIDHT = 212000;
 
@@ -193,7 +192,7 @@ class ConcreteImageLayout extends Layout
 	private static final String BOOKMARK_PREFIX = "javascript:catchBookmark('";
 	
 	public ConcreteImageLayout( LayoutEngineContext context,
-			ContainerLayout parentContext, IContent content, Image imageObject )
+			ContainerLayout parentContext, IContent content, ImageData imageObject )
 	{
 		super( context, parentContext, content );
 		this.imageObject = imageObject;
@@ -218,7 +217,7 @@ class ConcreteImageLayout extends Layout
 	 * @throws BadElementException
 	 */
 	protected Dimension getIntrinsicDimension( IImageContent content,
-			Image image ) throws BadElementException, MalformedURLException,
+			ImageData image ) throws MalformedURLException,
 			IOException
 	{
 		if ( image != null )
@@ -244,8 +243,8 @@ class ConcreteImageLayout extends Layout
 				resolutionY = PropertyUtil.getImageDpi( content, image
 						.getDpiY( ), context.getDpi( ) );
 			}
-			return new Dimension( (int) ( image.getPlainWidth( ) * 1000
-					/ resolutionX * 72 ), (int) ( image.getPlainHeight( ) * 1000
+			return new Dimension( (int) ( image.getWidth( ) * 1000
+					/ resolutionX * 72 ), (int) ( image.getHeight( ) * 1000
 					/ resolutionY * 72 ) );
 		}
 		return null;

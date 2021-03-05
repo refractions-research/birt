@@ -6,6 +6,8 @@
   <property name="TARGET_DIR" location="./target"/>
   <property name="STAGE_DIR" location="./target/package"/>
   <target name="package" depends="build-report-engine, build-webviewer, build-webviewer-war">
+  <!--<target name="package" depends="create-birt-runtime">-->
+  	
     <zip destfile="${TARGET_DIR}/birt-runtime-${BIRT_VERSION}.zip">
       <fileset dir="${STAGE_DIR}"/>
     </zip>
@@ -65,6 +67,7 @@
       </fileset>
     </copy>
     <!-- create org.eclipse.birt.runtime.jar -->
+    <mkdir dir="${STAGE_DIR}/ReportEngine/lib/"/>
     <buildJar basedir="${TARGET_DIR}/org.eclipse.birt.runtime"
               output="${STAGE_DIR}/ReportEngine/lib/tmp.birt.runtime.jar">
       <manifest>

@@ -16,7 +16,8 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 
-import com.lowagie.text.pdf.BaseFont;
+import com.itextpdf.io.font.constants.StandardFontFamilies;
+import com.itextpdf.kernel.font.PdfFont;
 
 public class FontMappingManager
 {
@@ -25,7 +26,7 @@ public class FontMappingManager
 	public static final String FONT_NAME_ALL_FONTS = "all-fonts";
 
 	/** default fonts */
-	public static final String DEFAULT_FONT = BaseFont.TIMES_ROMAN;
+	public static final String DEFAULT_FONT = StandardFontFamilies.TIMES;
 
 	private FontMappingManagerFactory factory;
 
@@ -158,8 +159,8 @@ public class FontMappingManager
 	 *            font style
 	 * @return the created BaseFont.
 	 */
-	public BaseFont createFont( String fontFamily, int fontStyle )
+	public PdfFont createFont( String fontFamily )
 	{
-		return factory.createFont( fontFamily, fontStyle );
+		return factory.createFont( fontFamily );
 	}
 }

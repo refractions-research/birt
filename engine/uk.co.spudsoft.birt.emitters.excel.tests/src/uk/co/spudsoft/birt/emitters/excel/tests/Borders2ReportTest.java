@@ -19,6 +19,7 @@ import static org.junit.Assert.assertNotNull;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -35,7 +36,7 @@ public class Borders2ReportTest extends ReportRunner {
 	 * - neighbouring cells may override the values for the chosen cell.
 	 * I don't know how to tell which takes precedence, but the following works for the tests I've carried out.
 	 */
-	public static void assertBorder( Sheet sheet, int row, int col, short bottom, short left, short right, short top ) {
+	public static void assertBorder( Sheet sheet, int row, int col, BorderStyle bottom, BorderStyle left, BorderStyle right, BorderStyle top ) {
 		
 		Row curRow = sheet.getRow( row );
 		Row prevRow = ( row > 0 ) ? sheet.getRow( row - 1 ) : null;
@@ -91,9 +92,9 @@ public class Borders2ReportTest extends ReportRunner {
 			Sheet sheet = workbook.getSheetAt(0);
 			assertEquals( 4, firstNullRow(sheet));
 			
-			assertBorder( sheet, 1, 2, CellStyle.BORDER_MEDIUM, CellStyle.BORDER_MEDIUM, CellStyle.BORDER_MEDIUM, CellStyle.BORDER_MEDIUM );
+			assertBorder( sheet, 1, 2, BorderStyle.MEDIUM, BorderStyle.MEDIUM, BorderStyle.MEDIUM, BorderStyle.MEDIUM );
 
-			assertBorder( sheet, 1, 4, CellStyle.BORDER_MEDIUM, CellStyle.BORDER_MEDIUM, CellStyle.BORDER_MEDIUM, CellStyle.BORDER_MEDIUM );
+			assertBorder( sheet, 1, 4, BorderStyle.MEDIUM, BorderStyle.MEDIUM, BorderStyle.MEDIUM, BorderStyle.MEDIUM );
 			
 		} finally {
 			inputStream.close();

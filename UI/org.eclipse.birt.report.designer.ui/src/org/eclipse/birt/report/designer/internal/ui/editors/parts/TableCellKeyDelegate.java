@@ -20,7 +20,6 @@ import org.eclipse.birt.report.designer.internal.ui.editors.schematic.actions.Se
 import org.eclipse.birt.report.designer.internal.ui.editors.schematic.actions.SelectRowAction;
 import org.eclipse.birt.report.designer.internal.ui.editors.schematic.editparts.AbstractCellEditPart;
 import org.eclipse.birt.report.designer.internal.ui.editors.schematic.editparts.AbstractTableEditPart;
-
 import org.eclipse.draw2d.FigureCanvas;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.PositionConstants;

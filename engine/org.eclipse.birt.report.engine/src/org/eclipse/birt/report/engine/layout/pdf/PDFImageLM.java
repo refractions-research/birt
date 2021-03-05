@@ -37,8 +37,8 @@ import org.eclipse.birt.report.engine.layout.pdf.util.PropertyUtil;
 import org.eclipse.birt.report.model.api.IResourceLocator;
 import org.eclipse.birt.report.model.api.ReportDesignHandle;
 
-import com.lowagie.text.BadElementException;
-import com.lowagie.text.Image;
+import com.itextpdf.io.image.ImageData;
+import com.itextpdf.io.image.ImageDataFactory;
 
 /**
  * 
@@ -136,9 +136,9 @@ public class PDFImageLM extends PDFLeafItemLM
 	 * @throws BadElementException
 	 */
 	protected Dimension getIntrinsicDimension( IImageContent content )
-			throws BadElementException, MalformedURLException, IOException
+			throws MalformedURLException, IOException
 	{
-		Image image = null;
+		ImageData image = null;
 		switch ( content.getImageSource( ) )
 		{
 			case IImageContent.IMAGE_FILE :
@@ -154,7 +154,7 @@ public class PDFImageLM extends PDFLeafItemLM
 				{
 					byte[] buffer = new byte[in.available( )];
 					in.read( buffer );
-					image = Image.getInstance( buffer );
+					image = ImageDataFactory.create( buffer );
 				}
 				catch ( Exception ex )
 				{
@@ -167,11 +167,11 @@ public class PDFImageLM extends PDFLeafItemLM
 				break;
 			case IImageContent.IMAGE_NAME :
 			case IImageContent.IMAGE_EXPRESSION :
-				image = Image.getInstance( content.getData( ) );
+				image = ImageDataFactory.create( content.getData( ) );
 				break;
 
 			case IImageContent.IMAGE_URL :
-				image = Image.getInstance( new URL( content.getURI( ) ) );
+				image = ImageDataFactory.create( new URL( content.getURI( ) ) );
 				break;
 			default :
 				assert ( false );
@@ -184,8 +184,8 @@ public class PDFImageLM extends PDFLeafItemLM
 			{
 				resolution = contentResolution;
 			}
-			return new Dimension( (int) ( image.getPlainWidth( ) * 1000
-					/ resolution * 72 ), (int) ( image.getPlainHeight( ) * 1000
+			return new Dimension( (int) ( image.getWidth( ) * 1000
+					/ resolution * 72 ), (int) ( image.getHeight( ) * 1000
 					/ resolution * 72 ) );
 		}
 		return null;

@@ -16,8 +16,8 @@ import java.util.List;
 
 import org.eclipse.birt.report.designer.internal.ui.editors.schematic.editparts.ReportElementEditPart;
 import org.eclipse.birt.report.designer.internal.ui.editors.schematic.editparts.TableEditPart;
-import org.eclipse.birt.report.designer.internal.ui.editors.schematic.handles.TableHandleKit;
 import org.eclipse.birt.report.designer.internal.ui.editors.schematic.handles.ReportResizableHandleKit;
+import org.eclipse.birt.report.designer.internal.ui.editors.schematic.handles.TableHandleKit;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.PositionConstants;
 import org.eclipse.gef.EditPart;

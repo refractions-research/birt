@@ -31,8 +31,9 @@ import org.eclipse.birt.report.engine.odf.style.StyleBuilder;
 import org.eclipse.birt.report.engine.odf.style.StyleConstant;
 import org.eclipse.birt.report.engine.odf.style.StyleEntry;
 
-import com.lowagie.text.Font;
-import com.lowagie.text.pdf.BaseFont;
+import com.itextpdf.io.font.constants.FontStyles;
+import com.itextpdf.kernel.font.PdfFont;
+import com.itextpdf.kernel.pdf.PdfName;
 
 public class OdpPage extends AbstractPage
 {
@@ -199,9 +200,9 @@ public class OdpPage extends AbstractPage
 		// automatically wrapped if the width of textbox equals to the width of
 		// text exactly.
 		FontInfo fontInfo = textStyle.getFontInfo( );
-		float descend = fontInfo.getBaseFont( ).getFontDescriptor(
-				BaseFont.DESCENT, fontInfo.getFontSize( ) );
-		
+//		float descend = fontInfo.getBaseFont( ).getFontDescriptor(
+//				BaseFont.DESCENT, fontInfo.getFontSize( ) );
+		float descend = fontInfo.getBaseFont().getPdfObject().getAsFloat(PdfName.Ascent);
 		StyleEntry style = StyleBuilder.createEmptyStyleEntry( StyleConstant.TYPE_TEXT );
 		style.setProperty( StyleConstant.DIRECTION_PROP, textStyle.getDirection( ) );
 		style.setProperty( StyleConstant.COLOR_PROP, OdpUtil.getColorString( textStyle.getColor( ) ) );
@@ -211,18 +212,18 @@ public class OdpPage extends AbstractPage
 		
 		if ( fontInfo != null )
 		{
-			BaseFont baseFont = fontInfo.getBaseFont( );
+			PdfFont baseFont = fontInfo.getBaseFont( );
 			String fontName = OdpUtil.getFontName( baseFont );
 
 			style.setProperty( StyleConstant.FONT_FAMILY_PROP, fontName );
 			style.setProperty( StyleConstant.FONT_SIZE_PROP, Double.valueOf( fontInfo.getFontSize( ) ) );
 			
-			if (( fontInfo.getFontStyle( ) & Font.BOLD ) != 0 )
+			if (( fontInfo.getFontStyle( ) & FontStyles.BOLD ) != 0 )
 			{
 				style.setProperty( StyleConstant.FONT_WEIGHT_PROP, "bold" );
 			}
 			
-			if (( fontInfo.getFontStyle( ) & Font.ITALIC ) != 0)
+			if (( fontInfo.getFontStyle( ) & FontStyles.ITALIC ) != 0)
 			{
 				style.setProperty( StyleConstant.FONT_STYLE_PROP, "italic" );
 			}

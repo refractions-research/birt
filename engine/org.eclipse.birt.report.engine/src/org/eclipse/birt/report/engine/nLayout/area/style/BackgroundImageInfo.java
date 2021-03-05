@@ -22,7 +22,8 @@ import org.eclipse.birt.report.engine.util.ResourceLocatorWrapper;
 import org.eclipse.birt.report.engine.util.SvgFile;
 import org.w3c.dom.css.CSSValue;
 
-import com.lowagie.text.Image;
+import com.itextpdf.io.image.ImageData;
+import com.itextpdf.io.image.ImageDataFactory;
 
 public class BackgroundImageInfo extends AreaConstants
 {
@@ -34,7 +35,7 @@ public class BackgroundImageInfo extends AreaConstants
 	protected String url;
 	protected byte[] imageData;
 	
-	private Image image;
+	private ImageData image;
 	
 	private ResourceLocatorWrapper rl = null;
 
@@ -137,7 +138,7 @@ public class BackgroundImageInfo extends AreaConstants
 		try
 		{
 
-			image = Image.getInstance( imageData );
+			image = ImageDataFactory.create( imageData );
 		}
 		catch ( Exception e )
 		{
@@ -145,7 +146,7 @@ public class BackgroundImageInfo extends AreaConstants
 			{
 				imageData = SvgFile.transSvgToArray( new ByteArrayInputStream(
 						imageData ) );
-				image = Image.getInstance( imageData );
+				image = ImageDataFactory.create( imageData );
 			}
 			catch ( Exception te )
 			{
@@ -156,7 +157,7 @@ public class BackgroundImageInfo extends AreaConstants
 
 	}
 	
-	public Image getImageInstance( )
+	public ImageData getImageInstance( )
 	{
 		return image;
 	}

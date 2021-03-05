@@ -37,7 +37,7 @@ import org.eclipse.birt.report.engine.nLayout.area.style.BoxStyle;
 import org.eclipse.birt.report.engine.util.ResourceLocatorWrapper;
 import org.eclipse.birt.report.model.api.ReportDesignHandle;
 
-import com.lowagie.text.Image;
+import com.itextpdf.io.image.ImageData;
 
 public class PageArea extends BlockContainerArea
 {
@@ -278,7 +278,7 @@ public class PageArea extends BlockContainerArea
 		IStyle cs = pageContent.getComputedStyle( );
 		BackgroundImageInfo backgroundImage = new BackgroundImageInfo( url, cs
 				.getProperty( IStyle.STYLE_BACKGROUND_REPEAT ), 0, 0, 0, 0, rl );
-		Image img = backgroundImage.getImageInstance( );
+		ImageData img = backgroundImage.getImageInstance( );
 		
 		IStyle style = pageContent.getStyle( );
 		String widthStr = style.getBackgroundWidth( );
@@ -293,9 +293,9 @@ public class PageArea extends BlockContainerArea
 				resolutionX = 96;
 				resolutionY = 96;
 			}
-			float imageWidth = img.getPlainWidth( ) / resolutionX * 72
+			float imageWidth = img.getWidth( ) / resolutionX * 72
 					* PDFConstants.LAYOUT_TO_PDF_RATIO;
-			float imageHeight = img.getPlainHeight( ) / resolutionY * 72
+			float imageHeight = img.getHeight( ) / resolutionY * 72
 					* PDFConstants.LAYOUT_TO_PDF_RATIO;
 			int actualWidth = (int) imageWidth;
 			int actualHeight = (int) imageHeight;

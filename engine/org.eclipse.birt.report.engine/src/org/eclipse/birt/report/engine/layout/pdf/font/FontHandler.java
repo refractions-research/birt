@@ -22,8 +22,8 @@ import org.eclipse.birt.report.engine.layout.PDFConstants;
 import org.eclipse.birt.report.engine.layout.pdf.util.PropertyUtil;
 import org.w3c.dom.css.CSSValueList;
 
-import com.lowagie.text.Font;
-import com.lowagie.text.pdf.BaseFont;
+import com.itextpdf.io.font.constants.FontStyles;
+import com.itextpdf.kernel.font.PdfFont;
 
 /**
  * the font handler, which maps fontFamily, fontStyle, fontWeight properties to
@@ -36,7 +36,7 @@ public class FontHandler
 	private String[] fontFamilies = null;
 
 	/** the style of the font, should be BOLD, ITALIC, BOLDITALIC or NORMAL */
-	private int fontStyle = Font.NORMAL;
+	private int fontStyle = FontStyles.NORMAL;
 
 	/** the font weight from 100-900. 400 is NORMAL, and 700 is bold */
 	private int fontWeight = 400;
@@ -45,7 +45,7 @@ public class FontHandler
 	private float fontSize = 0f;
 
 	/** the selected BaseFont */
-	private BaseFont bf = null;
+	private PdfFont bf = null;
 
 	/** the flag to show if the BaseFont has been changed */
 	private boolean isFontChanged = false;
@@ -94,12 +94,12 @@ public class FontHandler
 		if ( CSSConstants.CSS_OBLIQUE_VALUE.equals( style.getFontStyle( ) ) ||
 				CSSConstants.CSS_ITALIC_VALUE.equals( style.getFontStyle( ) ) )
 		{
-			this.fontStyle |= Font.ITALIC;
+			this.fontStyle |= FontStyles.ITALIC;
 		}
 
 		if ( PropertyUtil.isBoldFont( fontWeight ) )
 		{
-			this.fontStyle |= Font.BOLD;
+			this.fontStyle |= FontStyles.BOLD;
 		}
 
 		this.fontSize = PropertyUtil.getDimensionValueConsiderDpi( style
@@ -111,12 +111,11 @@ public class FontHandler
 			for ( int i = 0; i < fontFamilies.length; i++ )
 			{
 				String fontName = fontManager.getAliasedFont( fontFamilies[i] );
-				bf = fontManager.createFont( fontName, fontStyle );
+				bf = fontManager.createFont( fontName );
 				if ( bf != null )
 					return;
 			}
-			bf = fontManager.createFont( FontMappingManager.DEFAULT_FONT,
-					fontStyle );
+			bf = fontManager.createFont( FontMappingManager.DEFAULT_FONT );
 		}
 	}
 
@@ -136,12 +135,11 @@ public class FontHandler
 			for ( int i = 0; i < fontFamilies.length; i++ )
 			{
 				String fontName = fontManager.getAliasedFont( fontFamilies[i] );
-				bf = fontManager.createFont( fontName, fontStyle );
+				bf = fontManager.createFont( fontName );
 				if ( bf != null )
 					return;
 			}
-			bf = fontManager.createFont( FontMappingManager.DEFAULT_FONT,
-					fontStyle );
+			bf = fontManager.createFont( FontMappingManager.DEFAULT_FONT );
 		}
 	}
 
@@ -169,7 +167,7 @@ public class FontHandler
 		assert ( fontManager != null );
 		// FIXME: code review : return null when no mapped font defined the
 		// character so that charExist only need to be invoked once.
-		BaseFont candidateFont = getMappedFont( character );
+		PdfFont candidateFont = getMappedFont( character );
 		assert ( candidateFont != null );
 		if ( bf == candidateFont )
 		{
@@ -181,7 +179,7 @@ public class FontHandler
 			bf = candidateFont;
 			simulation = needSimulate( bf );
 		}
-		return candidateFont.charExists( character );
+		return candidateFont.containsGlyph( character );
 	}
 	
 	/**
@@ -197,11 +195,11 @@ public class FontHandler
 	 *            the given character.
 	 * @return the BaseFont. it always return a font.
 	 */
-	public BaseFont getMappedFont( char c )
+	public PdfFont getMappedFont( char c )
 	{	
 		if ( WEAK_FONT_CHARS.indexOf( c ) != -1 )
 		{
-			if ( bf != null && bf.charExists( c ) )
+			if ( bf != null && bf.containsGlyph( c ) )
 			{
 				return bf;
 			}
@@ -223,7 +221,7 @@ public class FontHandler
 				String usedFont = cf.getUsedFont( c );
 				if ( usedFont != null )
 				{
-					BaseFont bf = createBaseFont( usedFont );
+					PdfFont bf = createBaseFont( usedFont );
 					if ( bf != null )
 					{
 						return bf;
@@ -232,8 +230,8 @@ public class FontHandler
 			}
 			else
 			{
-				BaseFont bf = createBaseFont( fontFamily );
-				if ( bf != null && bf.charExists( c ) )
+				PdfFont bf = createBaseFont( fontFamily );
+				if ( bf != null && bf.containsGlyph( c ) )
 				{
 					return bf;
 				}
@@ -247,7 +245,7 @@ public class FontHandler
 			String usedFont = df.getUsedFont( c );
 			if ( usedFont != null )
 			{
-				BaseFont bf = createBaseFont( usedFont );
+				PdfFont bf = createBaseFont( usedFont );
 				if ( bf != null )
 				{
 					return bf;
@@ -255,7 +253,7 @@ public class FontHandler
 			}
 		}
 		// it's the last choice to use the default fonts
-		BaseFont bf = createBaseFont( FontMappingManager.DEFAULT_FONT );
+		PdfFont bf = createBaseFont( FontMappingManager.DEFAULT_FONT );
 		if ( bf == null )
 		{
 			throw new NullPointerException( "Failed to create " +
@@ -264,16 +262,16 @@ public class FontHandler
 		return bf;
 	}
 
-	private BaseFont createBaseFont( String physicalFont )
+	private PdfFont createBaseFont( String physicalFont )
 	{
-		BaseFont font = (BaseFont) fonts.get( physicalFont );
+		PdfFont font = (PdfFont) fonts.get( physicalFont );
 		if ( font == null )
 		{
 			if ( fonts.keySet( ).contains( physicalFont ) )
 			{
 				return null;
 			}
-			font = fontManager.createFont( physicalFont, fontStyle );
+			font = fontManager.createFont( physicalFont );
 			fonts.put( physicalFont, font );
 		}
 		return font;
@@ -284,27 +282,27 @@ public class FontHandler
 	 * simulate the proper style for the font. The "simulate" flag will be set
 	 * if we need to simulate it.
 	 */
-	private boolean needSimulate( BaseFont font )
+	private boolean needSimulate( PdfFont font )
 	{
-		if ( fontStyle == Font.NORMAL )
+		if ( fontStyle == FontStyles.NORMAL )
 		{
 			return false;
 		}
 
-		String[][] fullNames = bf.getFullFontName( );
+		String[][] fullNames = bf.getFontProgram().getFontNames().getFamilyName();
 		String fullName = getEnglishName( fullNames );
 		String lcf = fullName.toLowerCase( );
 
-		int fs = Font.NORMAL;
+		int fs = FontStyles.NORMAL;
 		if ( lcf.indexOf( "bold" ) != -1 )
 		{
-			fs |= Font.BOLD;
+			fs |= FontStyles.BOLD;
 		}
 		if ( lcf.indexOf( "italic" ) != -1 || lcf.indexOf( "oblique" ) != -1 )
 		{
-			fs |= Font.ITALIC;
+			fs |= FontStyles.ITALIC;
 		}
-		if ( ( fontStyle & Font.BOLDITALIC ) == fs )
+		if ( ( fontStyle & FontStyles.BOLDITALIC ) == fs )
 		{
 			if ( fontWeight > 400 && fontWeight != 700 )
 			{

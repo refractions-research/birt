@@ -14,7 +14,7 @@ package org.eclipse.birt.report.engine.emitter.pdf;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map.Entry;
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.eclipse.birt.report.engine.api.EngineException;
@@ -36,7 +36,7 @@ import org.eclipse.birt.report.engine.nLayout.area.ITextArea;
 import org.eclipse.birt.report.engine.nLayout.area.style.TextStyle;
 import org.eclipse.birt.report.model.api.ReportDesignHandle;
 
-import com.lowagie.text.pdf.PdfTemplate;
+import com.itextpdf.kernel.pdf.navigation.PdfDestination;
 
 public class PDFRender extends PageDeviceRender
 {
@@ -48,12 +48,16 @@ public class PDFRender extends PageDeviceRender
 
 	protected PDFPage currentPage = null;
 
-	protected boolean isTotalPage = false;
-
 	protected PDFPageDevice currentPageDevice = null;
 
-	protected HashSet<String> bookmarks = new HashSet<String>( );
+	protected HashMap<String, PdfDestination> bookmarks = new HashMap<>( );
 
+	//cache of all pages created
+	protected Set<PDFPage> allPages = new HashSet<>();
+	//set of hyperlinks to create after document is create; we
+	//need to make sure bookmarks are created before we create the hyperlinks
+	private Set<Object[]> hyperlinks = new HashSet<>();
+	
 	public PDFRender( IEmitterServices services ) throws EngineException
 	{
 		initialize( services );
@@ -77,6 +81,7 @@ public class PDFRender extends PageDeviceRender
 	{
 		super.newPage( page );
 		currentPage = (PDFPage) pageGraphic;
+		allPages.add(currentPage);
 	}
 
 	public void visitImage( IImageArea imageArea )
@@ -100,35 +105,17 @@ public class PDFRender extends PageDeviceRender
 	public void visitAutoText( ITemplateArea templateArea )
 	{
 		super.visitAutoText( templateArea );
-		int x = currentX + getX( templateArea );
+		int x = currentX +  getX( templateArea );
 		int y = currentY + getY( templateArea );
-		// create template according to the page scale
-		createTotalPageTemplate( x, y, getWidth( templateArea ),
-				getHeight( templateArea ), scale );
+		int width = getWidth(templateArea);
+		int height = getHeight(templateArea);
+		currentPage.createTotalPageTemplate( x, y, width, height );
 	}
 
 	public void setTotalPage( ITextArea totalPage )
 	{
 		super.setTotalPage( totalPage );
-		isTotalPage = true;
-		HashMap<Float, PdfTemplate> map = ( (PDFPageDevice) pageDevice )
-				.getTemplateMap( );
-		if ( !map.isEmpty( ) )
-		{
-			float scaleCache = this.scale;
-			for ( Entry<Float, PdfTemplate> e : map.entrySet( ) )
-			{
-				Float s = e.getKey( );
-				PdfTemplate template = e.getValue( );
-				if ( template != null )
-				{
-					this.scale = s.floatValue( );
-					drawText( totalPage );
-				}
-			}
-			this.scale = scaleCache;
-		}
-		isTotalPage = false;
+		allPages.forEach(p->p.drawTotalPage(totalPage.getText(), totalPage.getTextStyle()));
 	}
 
 	/**
@@ -139,6 +126,23 @@ public class PDFRender extends PageDeviceRender
 	 */
 	public void end( IReportContent rc )
 	{
+
+		//add hyperlinks
+		for (Object[] link : hyperlinks) {
+			String bookmark = (String)link[2];
+			if (bookmarks.get(bookmark) == null) continue;
+			
+			PDFPage page = (PDFPage) link[0];
+			String tlink = (String)link[1];
+			String targetWindow = (String)link[2];
+			int type = (int)link[4];
+			int x = (int)link[5];
+			int y = (int)link[6];
+			int width = (int)link[7];
+			int height = (int)link[8];
+			page.createHyperlink(tlink,bookmarks.get(bookmark), targetWindow, type, x,y, width,height);
+		}
+		
 		createTOC( );
 		super.end( rc );
 	}
@@ -178,18 +182,11 @@ public class PDFRender extends PageDeviceRender
 	protected void drawTextAt( ITextArea text, int x, int y, int width,
 			int height, TextStyle textInfo )
 	{
-		if ( isTotalPage )
-		{
-			currentPage.drawTotalPage( text.getText( ), x, y, width, height,
-					textInfo, scale );
-		}
-		else
-		{
-			currentPage.drawText( text.getText( ), x, y, width, height,
-					textInfo );
-		}
+		currentPage.drawText( text.getText( ), x, y, width, height, textInfo );
 	}
 
+
+	
 	private void createHyperlink( IArea area, int x, int y )
 	{
 		IHyperlinkAction hlAction = area.getAction( );
@@ -224,17 +221,17 @@ public class PDFRender extends PageDeviceRender
 				switch ( type )
 				{
 					case IHyperlinkAction.ACTION_BOOKMARK :
-						currentPage.createHyperlink( link, bookmark,
-								targetWindow, type, x, y, width, height );
+						//cache to create later
+						hyperlinks.add(new Object[] {currentPage, link,bookmark,targetWindow,type,x,y,width,height});
 						break;
 
 					case IHyperlinkAction.ACTION_HYPERLINK :
-						currentPage.createHyperlink( link, null, targetWindow,
+						currentPage.createHyperlink( link, (String)null, targetWindow,
 								type, x, y, width, height );
 						break;
 
 					case IHyperlinkAction.ACTION_DRILLTHROUGH :
-						currentPage.createHyperlink( link, null, targetWindow,
+						currentPage.createHyperlink( link, (String)null, targetWindow,
 								type, x, y, width, height );
 						break;
 				}
@@ -252,20 +249,14 @@ public class PDFRender extends PageDeviceRender
 		{
 			int height = getHeight( area );
 			int width = getWidth( area );
-			currentPage.createBookmark( bookmark, x, y, width, height );
-			bookmarks.add( bookmark );
+			PdfDestination d = currentPage.createBookmark( bookmark, x, y, width, height );
+			bookmarks.put( bookmark, d );
 		}
 	}
 
 	private void createTOC( )
 	{
-		currentPageDevice.createTOC( bookmarks );
-	}
-
-	private void createTotalPageTemplate( int x, int y, int width, int height,
-			float scale )
-	{
-		currentPage.createTotalPageTemplate( x, y, width, height, scale );
+		currentPageDevice.createTOC( bookmarks.keySet() );
 	}
 
 }

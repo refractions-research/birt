@@ -132,8 +132,7 @@ public class TextAreaLayout implements ILayout
 		textStyle.setWordSpacing( PropertyUtil.getDimensionValue( style
 				.getProperty( IStyle.STYLE_WORD_SPACING ) ) );
 		textStyle
-				.setLineThrough( style
-						.getProperty( IStyle.STYLE_TEXT_LINETHROUGH ) == IStyle.LINE_THROUGH_VALUE );
+				.setLineThrough( style.getProperty( IStyle.STYLE_TEXT_LINETHROUGH ) == IStyle.LINE_THROUGH_VALUE );
 		textStyle
 				.setOverLine( style.getProperty( IStyle.STYLE_TEXT_OVERLINE ) == IStyle.OVERLINE_VALUE );
 		CSSValue underLine = style.getProperty( IStyle.STYLE_TEXT_UNDERLINE );

@@ -4,16 +4,16 @@
  *******************************************************************************/
 package org.eclipse.birt.report.designer.internal.ui.swt.custom;
 
-import java.util.ArrayList;  
-import java.util.List;  
-  
-import org.eclipse.jface.viewers.ColumnLayoutData;  
-import org.eclipse.jface.viewers.ColumnPixelData;  
-import org.eclipse.jface.viewers.ColumnWeightData;  
-import org.eclipse.jface.viewers.TableLayout;  
-import org.eclipse.swt.events.ControlEvent;  
-import org.eclipse.swt.events.ControlListener;  
-import org.eclipse.swt.widgets.Table;  
+import java.util.ArrayList;
+import java.util.List;
+
+import org.eclipse.jface.viewers.ColumnLayoutData;
+import org.eclipse.jface.viewers.ColumnPixelData;
+import org.eclipse.jface.viewers.ColumnWeightData;
+import org.eclipse.jface.viewers.TableLayout;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ControlListener;
+import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;  
   
 /** 

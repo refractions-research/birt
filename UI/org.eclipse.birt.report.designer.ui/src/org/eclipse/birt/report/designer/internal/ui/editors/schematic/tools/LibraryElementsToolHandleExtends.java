@@ -38,10 +38,10 @@ import org.eclipse.birt.report.model.api.command.WrongTypeException;
 import org.eclipse.birt.report.model.api.elements.structures.ComputedColumn;
 import org.eclipse.birt.report.model.api.util.ColumnBindingUtil;
 import org.eclipse.birt.report.model.elements.interfaces.IReportItemModel;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
-import org.eclipse.jface.util.Assert;
 
 /**
  * The tool handle extends used by elements in the library

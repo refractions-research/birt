@@ -29,9 +29,12 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.Bundle;
 
-import com.lowagie.text.Font;
-import com.lowagie.text.FontFactory;
-import com.lowagie.text.pdf.BaseFont;
+import com.itextpdf.io.font.PdfEncodings;
+import com.itextpdf.io.font.constants.FontStyles;
+import com.itextpdf.io.font.constants.StandardFontFamilies;
+import com.itextpdf.io.font.constants.StandardFonts;
+import com.itextpdf.kernel.font.PdfFont;
+import com.itextpdf.kernel.font.PdfFontFactory;
 
 /**
  * FontMappingManagerFactory used to created all font mapping managers.
@@ -211,7 +214,7 @@ public class FontMappingManagerFactory
 				String javaHome = System.getProperty( "java.home" );
 				String fontsFolder = javaHome + File.separatorChar + "lib"
 						+ File.separatorChar + "fonts";
-				FontFactory.registerDirectory( fontsFolder );
+				PdfFontFactory.registerDirectory( fontsFolder );
 				return null;
 			}
 		} );
@@ -502,15 +505,16 @@ public class FontMappingManagerFactory
 	 *            the specified font family name.
 	 * @return the created BaseFont.
 	 */
-	public BaseFont createFont( String familyName, int fontStyle )
+	public PdfFont createFont( String familyName )
 	{
-		String key = familyName + fontStyle;
-		BaseFont bf = null;
+		String key = familyName;
+		PdfFont bf = null;
+		
 		synchronized ( baseFonts )
 		{
 			if ( baseFonts.containsKey( key ) )
 			{
-				bf = (BaseFont) baseFonts.get( key );
+				bf = (PdfFont) baseFonts.get( key );
 			}
 			else
 			{
@@ -520,10 +524,10 @@ public class FontMappingManagerFactory
 							.get( familyName );
 					if ( fontEncoding == null )
 					{
-						fontEncoding = BaseFont.IDENTITY_H;
+						fontEncoding = PdfEncodings.IDENTITY_H;
 					}
-					bf = FontFactory.getFont( familyName, fontEncoding,
-							BaseFont.EMBEDDED, 14, fontStyle ).getBaseFont( );
+//					bf = PdfFontFactory.createFont( familyName, fontEncoding, true);
+					bf = PdfFontFactory.createRegisteredFont( familyName, fontEncoding, true);
 				}
 				catch ( Throwable de )
 				{
@@ -531,10 +535,10 @@ public class FontMappingManagerFactory
 				}
 				baseFonts.put( key, bf );
 			}
-			if ( bf == null && fontStyle != Font.NORMAL )
-			{
-				return createFont( familyName, Font.NORMAL );
-			}
+//			if ( bf == null && fontStyle != FontStyles.NORMAL )
+//			{
+//				return createFont( familyName, FontStyles.NORMAL );
+//			}
 		}
 		return bf;
 	}
@@ -551,11 +555,11 @@ public class FontMappingManagerFactory
 				{
 					if ( file.isDirectory( ) )
 					{
-						FontFactory.registerDirectory( fontPath );
+						PdfFontFactory.registerDirectory( fontPath );
 					}
 					else
 					{
-						FontFactory.register( fontPath );
+						PdfFontFactory.register( fontPath );
 					}
 				}
 				long end = System.currentTimeMillis( );

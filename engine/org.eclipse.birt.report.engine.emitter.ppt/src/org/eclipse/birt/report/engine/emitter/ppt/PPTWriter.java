@@ -41,8 +41,9 @@ import org.eclipse.birt.report.engine.nLayout.area.style.TextStyle;
 
 import com.ibm.icu.lang.UCharacter;
 import com.ibm.icu.lang.UCharacter.UnicodeBlock;
-import com.lowagie.text.Font;
-import com.lowagie.text.pdf.BaseFont;
+import com.itextpdf.io.font.constants.FontStyles;
+import com.itextpdf.kernel.font.PdfFont;
+import com.itextpdf.kernel.pdf.PdfName;
 
 public class PPTWriter
 {
@@ -274,9 +275,9 @@ public class PPTWriter
 		drawBackgroundColor( backgroundColor, 0, 0, pageWidth, pageHeight );
 	}
 
-	private String getFontName( BaseFont baseFont )
+	private String getFontName( PdfFont baseFont )
 	{
-		String[][] familyFontNames = baseFont.getFamilyFontName( );
+		String[][] familyFontNames = baseFont.getFontProgram().getFontNames().getFamilyName();
 		String[] family = familyFontNames[familyFontNames.length - 1];
 		return family[family.length - 1];
 	}
@@ -310,12 +311,12 @@ public class PPTWriter
 		{
 			return;
 		}
-		
-		float descend = fontInfo.getBaseFont( ).getFontDescriptor(
-				BaseFont.DESCENT, fontInfo.getFontSize( ) );
+		float descend = fontInfo.getBaseFont().getPdfObject().getAsNumber(PdfName.Descent).floatValue();
+//		float descend = fontInfo.getBaseFont( ).getFontDescriptor(
+//				BaseFont.DESCENT, fontInfo.getFontSize( ) );
 		height = height + descend * 0.6f;
 		
-		BaseFont baseFont = fontInfo.getBaseFont( );
+		PdfFont baseFont = fontInfo.getBaseFont( );
 		String fontName = getFontName( baseFont );
 
 		println( "<v:shape id=3D\"_x0000_s" + ( ++shapeCount ) + "\" type=3D\"#_x0000_t202\"" ); //$NON-NLS-1$ //$NON-NLS-2$
@@ -335,9 +336,9 @@ public class PPTWriter
 				+ ">" ); //$NON-NLS-1$
 
 		boolean isItalic = fontInfo != null
-				&& ( fontInfo.getFontStyle( ) & Font.ITALIC ) != 0;
+				&& ( fontInfo.getFontStyle( ) & FontStyles.ITALIC ) != 0;
 		boolean isBold = fontInfo != null
-				&& ( fontInfo.getFontStyle( ) & Font.BOLD ) != 0;
+				&& ( fontInfo.getFontStyle( ) & FontStyles.BOLD ) != 0;
 						
 		boolean isUnderline = textStyle.isUnderline();
 		

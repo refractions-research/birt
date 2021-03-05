@@ -14,8 +14,8 @@ package org.eclipse.birt.report.designer.tests.example.matrix;
 import org.eclipse.birt.report.designer.internal.ui.editors.schematic.figures.LabelFigure;
 import org.eclipse.birt.report.designer.ui.extensions.IReportItemFigureProvider;
 import org.eclipse.birt.report.model.api.ExtendedItemHandle;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.IFigure;
-import org.eclipse.jface.util.Assert;
 
 /**
  *  

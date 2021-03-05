@@ -31,7 +31,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java.util.Stack;
 import java.util.logging.Level;
@@ -56,11 +55,10 @@ import org.eclipse.birt.report.engine.layout.pdf.font.FontInfo;
 import org.eclipse.birt.report.engine.nLayout.area.style.BorderInfo;
 import org.w3c.dom.css.CSSValue;
 
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Font;
-import com.lowagie.text.FontFactory;
-import com.lowagie.text.FontFactoryImp;
-import com.lowagie.text.pdf.BaseFont;
+import com.itextpdf.io.font.constants.FontStyles;
+import com.itextpdf.io.font.constants.StandardFonts;
+import com.itextpdf.io.font.otf.FontReadingException;
+import com.itextpdf.kernel.font.PdfFont;
 
 public class PostscriptWriter
 {
@@ -68,49 +66,49 @@ public class PostscriptWriter
 	private static final String AUTO_PAPER_TRAY_STRING = "<</ManualFeed false /MediaPosition 41 /TraySwitch true>>setpagedevice";
 
 	/** This is a possible value of a base 14 type 1 font */
-	public static final String COURIER = BaseFont.COURIER;
+	public static final String COURIER = StandardFonts.COURIER;
 
 	/** This is a possible value of a base 14 type 1 font */
-	public static final String COURIER_BOLD = BaseFont.COURIER_BOLD;
+	public static final String COURIER_BOLD = StandardFonts.COURIER_BOLD;
 
 	/** This is a possible value of a base 14 type 1 font */
-	public static final String COURIER_OBLIQUE = BaseFont.COURIER_OBLIQUE;
+	public static final String COURIER_OBLIQUE = StandardFonts.COURIER_OBLIQUE;
 
 	/** This is a possible value of a base 14 type 1 font */
-	public static final String COURIER_BOLDOBLIQUE = BaseFont.COURIER_BOLDOBLIQUE;
+	public static final String COURIER_BOLDOBLIQUE = StandardFonts.COURIER_BOLDOBLIQUE;
 
 	/** This is a possible value of a base 14 type 1 font */
-	public static final String HELVETICA = BaseFont.HELVETICA;
+	public static final String HELVETICA = StandardFonts.HELVETICA;
 
 	/** This is a possible value of a base 14 type 1 font */
-	public static final String HELVETICA_BOLD = BaseFont.HELVETICA_BOLD;
+	public static final String HELVETICA_BOLD = StandardFonts.HELVETICA_BOLD;
 
 	/** This is a possible value of a base 14 type 1 font */
-	public static final String HELVETICA_OBLIQUE = BaseFont.HELVETICA_OBLIQUE;
+	public static final String HELVETICA_OBLIQUE = StandardFonts.HELVETICA_OBLIQUE;
 
 	/** This is a possible value of a base 14 type 1 font */
-	public static final String HELVETICA_BOLDOBLIQUE = BaseFont.HELVETICA_BOLDOBLIQUE;
+	public static final String HELVETICA_BOLDOBLIQUE = StandardFonts.HELVETICA_BOLDOBLIQUE;
 
 	/** This is a possible value of a base 14 type 1 font */
-	public static final String SYMBOL = BaseFont.SYMBOL;
+	public static final String SYMBOL = StandardFonts.SYMBOL;
 
 	/** This is a possible value of a base 14 type 1 font */
 	public static final String TIMES = "Times";
 
 	/** This is a possible value of a base 14 type 1 font */
-	public static final String TIMES_ROMAN = BaseFont.TIMES_ROMAN;
+	public static final String TIMES_ROMAN = StandardFonts.TIMES_ROMAN;
 
 	/** This is a possible value of a base 14 type 1 font */
-	public static final String TIMES_BOLD = BaseFont.TIMES_BOLD;
+	public static final String TIMES_BOLD = StandardFonts.TIMES_BOLD;
 
 	/** This is a possible value of a base 14 type 1 font */
-	public static final String TIMES_ITALIC = BaseFont.TIMES_ITALIC;
+	public static final String TIMES_ITALIC = StandardFonts.TIMES_ITALIC;
 
 	/** This is a possible value of a base 14 type 1 font */
-	public static final String TIMES_BOLDITALIC = BaseFont.TIMES_BOLDITALIC;
+	public static final String TIMES_BOLDITALIC = StandardFonts.TIMES_BOLDITALIC;
 
 	/** This is a possible value of a base 14 type 1 font */
-	public static final String ZAPFDINGBATS = BaseFont.ZAPFDINGBATS;
+	public static final String ZAPFDINGBATS = StandardFonts.ZAPFDINGBATS;
 
 	public static final int TRAYCODE_AUTO = -1;
 	public static final int TRAYCODE_MANUAL = 41;
@@ -138,7 +136,7 @@ public class PostscriptWriter
 	/**
 	 * The current font
 	 */
-	protected Font font = new Font( Font.HELVETICA, 12, Font.NORMAL );
+//	protected Font font = new PdfFont( StandardFonts.HELVETICA, 12, Font.NORMAL );
 
 	/**
 	 * log
@@ -620,18 +618,18 @@ public class PostscriptWriter
 			int fontStyle = fontInfo.getFontStyle( );
 			if ( fontInfo.getSimulation( ) )
 			{
-				if ( fontStyle == Font.BOLD || fontStyle == Font.BOLDITALIC )
+				if ( fontStyle == FontStyles.BOLD || fontStyle == FontStyles.BOLDITALIC )
 				{
 					offset = (float) ( fontSize * Math.log10( fontSize ) / 100 );
 					needSimulateBold = true;
 				}
-				if ( fontStyle == Font.ITALIC || fontStyle == Font.BOLDITALIC )
+				if ( fontStyle == FontStyles.ITALIC || fontStyle == FontStyles.BOLDITALIC )
 				{
 					needSimulateItalic = true;
 				}
 			}
-			BaseFont baseFont = fontInfo.getBaseFont( );
-			String fontName = baseFont.getPostscriptFontName( );
+			PdfFont baseFont = fontInfo.getBaseFont( );
+			String fontName = baseFont.getFontProgram().getFontNames().getFontName();
 			text = applyFont( fontName, fontStyle, fontSize, text );
 		}
 		outputColor( color );
@@ -704,10 +702,10 @@ public class PostscriptWriter
 		return clr;
 	}
 
-	public Font getFont( )
-	{
-		return font;
-	}
+//	public Font getFont( )
+//	{
+//		return font;
+//	}
 
 	public void setColor( Color c )
 	{
@@ -735,16 +733,16 @@ public class PostscriptWriter
 		out.println( "setrgbcolor" );
 	}
 
-	public void setFont( Font f )
-	{
-		if ( f != null )
-		{
-			this.font = f;
-			String javaName = font.getFamilyname( );
-			int javaStyle = font.getStyle( );
-			setFont( javaName, javaStyle );
-		}
-	}
+//	public void setFont( Font f )
+//	{
+//		if ( f != null )
+//		{
+//			this.font = f;
+//			String javaName = font.getFamilyname( );
+//			int javaStyle = font.getStyle( );
+//			setFont( javaName, javaStyle );
+//		}
+//	}
 
 	private boolean needSetFont( String fontName, float fontSize )
 	{
@@ -831,10 +829,6 @@ public class PostscriptWriter
 			{
 				log.log( Level.WARNING, "apply font: " + fontName );
 			}
-			catch ( DocumentException de )
-			{
-				log.log( Level.WARNING, "apply font: " + fontName );
-			}
 			return null;
 		}
 	}
@@ -867,7 +861,7 @@ public class PostscriptWriter
 	}
 
 	private ITrueTypeWriter getTrueTypeFontWriter( String fontPath,
-	        String fontName ) throws DocumentException, IOException
+	        String fontName ) throws FontReadingException, IOException
 	{
 		File file = new File( fontPath );
 		ITrueTypeWriter trueTypeWriter = (ITrueTypeWriter) trueTypeFontWriters
@@ -888,24 +882,25 @@ public class PostscriptWriter
 
 	private String getFontPath( String fontName )
 	{
-		try
-		{
-			FontFactoryImp fontImpl = FontFactory.getFontImp( );
-			Properties trueTypeFonts = (Properties) getField( FontFactoryImp.class,
-			                                                  "trueTypeFonts",
-			                                                  fontImpl );
-			String fontPath = trueTypeFonts
-			        .getProperty( fontName.toLowerCase( ) );
-			return fontPath;
-		}
-		catch ( IllegalAccessException e )
-		{
-			log.log( Level.WARNING, "font path: " + fontName );
-		}
-		catch ( NoSuchFieldException e )
-		{
-			log.log( Level.WARNING, "font path: " + fontName );
-		}
+//		try
+//		{
+//			PdfFontFactory.
+//			FontFactoryImp fontImpl = FontFactory.getFontImp( );
+//			Properties trueTypeFonts = (Properties) getField( FontFactoryImp.class,
+//			                                                  "trueTypeFonts",
+//			                                                  fontImpl );
+//			String fontPath = trueTypeFonts
+//			        .getProperty( fontName.toLowerCase( ) );
+//			return fontPath;
+//		}
+//		catch ( IllegalAccessException e )
+//		{
+//			log.log( Level.WARNING, "font path: " + fontName );
+//		}
+//		catch ( NoSuchFieldException e )
+//		{
+//			log.log( Level.WARNING, "font path: " + fontName );
+//		}
 		return null;
 	}
 

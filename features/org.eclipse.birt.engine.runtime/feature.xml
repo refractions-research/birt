@@ -1,8 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.eclipse.birt.engine.runtime"
       label="%featureName"
-      version="4.11.0.qualifier"
+      version="4.18.0.qualifier"
       provider-name="%providerName"
       image="eclipse_update_120.jpg">
 
@@ -219,7 +218,7 @@
          id="javax.wsdl"
          download-size="0"
          install-size="0"
-         version="1.5.1.qualifier"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
@@ -297,13 +296,6 @@
          unpack="false"/>
 
    <plugin
-         id="org.apache.batik.ext.awt"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.apache.batik.parser"
          download-size="0"
          install-size="0"
@@ -319,13 +311,6 @@
 
    <plugin
          id="org.apache.batik.util"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.apache.batik.util.gui"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -642,7 +627,7 @@
          download-size="0"
          install-size="0"
          version="0.0.0"
-         unpack="false"/> 
+         unpack="false"/>
 
    <plugin
          id="org.eclipse.equinox.event"

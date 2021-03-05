@@ -18,12 +18,12 @@ import java.util.Map;
 
 import org.eclipse.birt.report.designer.nls.Messages;
 import org.eclipse.birt.report.designer.ui.templates.IDynamicTemplateProvider;
+import org.eclipse.birt.report.designer.ui.templates.IDynamicTemplateProvider.Callback;
 import org.eclipse.birt.report.designer.ui.templates.ITemplateAdaptable;
 import org.eclipse.birt.report.designer.ui.templates.ITemplateEntry;
 import org.eclipse.birt.report.designer.ui.templates.ITemplateFile;
 import org.eclipse.birt.report.designer.ui.templates.ITemplateFolder;
 import org.eclipse.birt.report.designer.ui.templates.ITemplateProvider;
-import org.eclipse.birt.report.designer.ui.templates.IDynamicTemplateProvider.Callback;
 import org.eclipse.birt.report.designer.ui.views.ElementAdapterManager;
 import org.eclipse.birt.report.model.api.ReportDesignHandle;
 import org.eclipse.jface.viewers.ILabelProvider;

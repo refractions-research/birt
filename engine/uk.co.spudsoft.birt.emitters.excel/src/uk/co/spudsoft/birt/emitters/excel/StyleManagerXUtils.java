@@ -20,11 +20,12 @@ import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.RichTextString;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.util.Units;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFRichTextString;
-import org.apache.poi.xssf.usermodel.XSSFShape;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.xssf.usermodel.extensions.XSSFCellBorder.BorderSide;
 import org.eclipse.birt.report.engine.content.IPageContent;
 import org.eclipse.birt.report.engine.content.IStyle;
@@ -127,11 +128,11 @@ public class StyleManagerXUtils extends StyleManagerUtils {
 			String borderStyleString = borderStyle == null ? "solid" : borderStyle.getCssText();
 			String widthString = width == null ? "medium" : width.getCssText();
 			
-			if( style instanceof XSSFCellStyle ) {
+			if( style instanceof XSSFCellStyle && workbook instanceof XSSFWorkbook ) {
 				XSSFCellStyle xStyle = (XSSFCellStyle)style;
 				
 				BorderStyle xBorderStyle = poiBorderStyleFromBirt(borderStyleString, widthString);
-				XSSFColor xBorderColour = getXColour(colourString);
+				XSSFColor xBorderColour = getXColour(colourString, (XSSFWorkbook)workbook);
 				if(xBorderStyle != BorderStyle.NONE) {
 					switch( side ) {
 					case TOP:
@@ -160,14 +161,14 @@ public class StyleManagerXUtils extends StyleManagerUtils {
 		}
 	}
 	
-	private XSSFColor getXColour(String colour) {
+	private XSSFColor getXColour(String colour, XSSFWorkbook workbook) {
 		int[] rgbInt = ColorUtil.getRGBs(colour);
 		if( rgbInt == null ) {
 			return null;
 		}
 		byte[] rgbByte = { (byte)-1, (byte)rgbInt[0], (byte)rgbInt[1], (byte)rgbInt[2] };
 		// System.out.println( "The X colour for " + colour + " is [ " + rgbByte[0] + "," + rgbByte[1] + "," + rgbByte[2] + "," + rgbByte[3] + "]" );
-		XSSFColor result = new XSSFColor( rgbByte );
+		XSSFColor result = new XSSFColor( rgbByte, workbook.getStylesSource().getIndexedColors() );
 		return result;		
 	}
 
@@ -176,13 +177,12 @@ public class StyleManagerXUtils extends StyleManagerUtils {
 		if(colour == null) {
 			return ;
 		}
-		if(IStyle.TRANSPARENT_VALUE.equals(colour)) {
+		if(IStyle.TRANSPARENT_VALUE.getStringValue().equals(colour)) {
 			return ;
 		}
-		if(font instanceof XSSFFont) {
+		if(font instanceof XSSFFont && workbook instanceof XSSFWorkbook) {
 			XSSFFont xFont = (XSSFFont)font;
-			XSSFColor xColour = getXColour(colour);
-			
+			XSSFColor xColour = getXColour(colour, (XSSFWorkbook)workbook);
 			if(xColour != null) {
 				xFont.setColor(xColour);
 			}
@@ -194,12 +194,12 @@ public class StyleManagerXUtils extends StyleManagerUtils {
 		if(colour == null) {
 			return ;
 		}
-		if(IStyle.TRANSPARENT_VALUE.equals(colour)) {
+		if(IStyle.TRANSPARENT_VALUE.getStringValue().equals(colour)) {
 			return ;
 		}
-		if(style instanceof XSSFCellStyle) {
+		if(style instanceof XSSFCellStyle && workbook instanceof XSSFWorkbook) {
 			XSSFCellStyle cellStyle = (XSSFCellStyle)style;
-			XSSFColor xColour = getXColour(colour);
+			XSSFColor xColour = getXColour(colour, (XSSFWorkbook)workbook);
 			if(xColour != null) {
 				cellStyle.setFillForegroundColor(xColour);
 				cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
@@ -213,7 +213,7 @@ public class StyleManagerXUtils extends StyleManagerUtils {
 		int bgRgb[] = parseColour( bgColour == null ? null : bgColour.getCssText(), "white" );
 
 		XSSFColor colour = ((XSSFFont)font).getXSSFColor();
-		int fgRgb[] = rgbOnly( colour.getARgb() );
+		int fgRgb[] = rgbOnly( colour.getARGB() );
 		if( ( fgRgb[0] == 255 ) && ( fgRgb[1] == 255 ) && ( fgRgb[2] == 255 ) ) {
 			fgRgb[0]=fgRgb[1]=fgRgb[2]=0;
 		} else if( ( fgRgb[0] == 0 ) && ( fgRgb[1] == 0 ) && ( fgRgb[2] == 0 ) ) {
@@ -238,7 +238,7 @@ public class StyleManagerXUtils extends StyleManagerUtils {
 	
 	@Override
 	public int anchorDyFromPoints( float height, float rowHeight ) {
-		return (int)( height * XSSFShape.EMU_PER_POINT );
+		return (int)( height * Units.EMU_PER_POINT );
 	}
 
 	@Override

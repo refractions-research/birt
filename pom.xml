@@ -3,11 +3,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.eclipse.birt</groupId>
 	<artifactId>org.eclipse.birt-parent</artifactId>
-	<version>4.11.0-SNAPSHOT</version>
+	<version>4.18.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<properties>
-		<birt.version>4.11.0</birt.version>
+		<antrun.version>1.8</antrun.version>
+		<birt.version>4.18.0</birt.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<Replace_By_Date>v${maven.build.timestamp}</Replace_By_Date>
 		<!--<build>v${maven.build.timestamp}</build>-->
@@ -17,11 +18,37 @@
 
 	<!-- make release builds in particular quicker and more reliable -->
 	<profiles>
-	    <profile>
-            <id>master</id>
+	
+		<profile>
+            <id>2020-12</id>
             <activation>
             	<activeByDefault>true</activeByDefault>
             </activation>
+            <properties>
+                <eclipse.release.name>2020-12</eclipse.release.name>
+                <tycho.version>2.2.0</tycho.version>
+                <eclipse.repo.url>http://download.eclipse.org/eclipse/updates/4.18/</eclipse.repo.url>
+                
+                <emf.repo.url>http://download.eclipse.org/modeling/emf/emf/builds/milestone/latest</emf.repo.url>
+                <gef.repo.url>http://download.eclipse.org/tools/gef/updates/legacy/releases/</gef.repo.url>
+                <!-- https://wiki.eclipse.org/WTP_FAQ#How_do_I_install_WTP.3F -->
+				<wtp.repo.url>https://download.eclipse.org/webtools/downloads/drops/R3.20.0/R-3.20.0-20201201143606/repository/</wtp.repo.url>
+                <!-- http://download.eclipse.org/tools/orbit/downloads/ -->
+                <!-- <orbit.repo.url>https://download.eclipse.org/tools/orbit/downloads/drops/R20201130205003/repository/</orbit.repo.url>-->
+                <orbit.repo.url>https://download.eclipse.org/tools/orbit/downloads/drops/I20210216201023/repository/</orbit.repo.url>
+                <!-- https://eclipse.org/datatools/downloads.php  -->
+                <dtp.repo.url>https://download.eclipse.org/datatools/updates/1.14.105-SNAPSHOT/repository/</dtp.repo.url>
+                <!-- jetty.repo.url>http://download.eclipse.org/jetty/updates/jetty-bundles-9.x/</jetty.repo.url -->
+                <jetty.repo.url>http://download.eclipse.org/jetty/updates/jetty-bundles-9.x/${jetty.version}</jetty.repo.url>
+                
+                <jetty.version>9.4.35.v20201120</jetty.version>
+                <mongodb.version>3.2.2.v20181004-1955</mongodb.version>
+				<lucene.version>(3.0.0,9.0.0)</lucene.version>
+            </properties>
+        </profile>
+        
+	    <profile>
+            <id>2019-03</id>
             <properties>
                 <eclipse.release.name>2019-03</eclipse.release.name>
                 <tycho.version>1.0.0</tycho.version>
@@ -246,9 +273,9 @@
 		<module>features</module>
 		<module>model</module>
 		<!-- build issue inside -->
-		<module>nl</module>
+<!-- 		<module>nl</module> -->
 		<!-- report.viewer.tests build issue, and how to run tests.xxx plugins -->
-		<module>testsuites</module>
+<!-- 		<module>testsuites</module> -->
 		<module>UI</module>
 		<module>viewer</module>
 		<module>xtab</module>
@@ -323,6 +350,40 @@
 						</execution>
 					</executions>
 				</plugin>
+				
+				
+				
+				
+				<plugin>
+          <groupId>org.eclipse.m2e</groupId>
+          <artifactId>lifecycle-mapping</artifactId>
+          <version>1.0.0</version>
+          <configuration>
+          <lifecycleMappingMetadata>
+               <pluginExecutions>
+                  <pluginExecution>
+                      <pluginExecutionFilter>
+                          <groupId>
+                              org.apache.maven.plugins
+                          </groupId>
+                          <artifactId>
+                              maven-toolchains-plugin
+                          </artifactId>
+                          <versionRange>
+                              [1.1,)
+                          </versionRange>
+                          <goals>
+                              <goal>toolchain</goal>
+                          </goals>
+                      </pluginExecutionFilter>
+                      <action>
+                          <ignore></ignore>
+                      </action>
+                  </pluginExecution>
+              </pluginExecutions>
+            </lifecycleMappingMetadata>
+          </configuration>
+        </plugin>
 			</plugins>
 		</pluginManagement>
 
@@ -332,146 +393,14 @@
 				<artifactId>target-platform-configuration</artifactId>
 				<version>${tycho.version}</version>
 				<configuration>
-					<pomDependencies>consider</pomDependencies>
-					<includePackedArtifacts>false</includePackedArtifacts>
-					<environments>
-						<environment>
-							<os>win32</os>
-							<ws>win32</ws>
-							<arch>x86_64</arch>
-						</environment>
-					</environments>
-					<filters>
-						<!-- restrict Jetty bundles to specific version only -->
-						<filter>
-							<type>eclipse-plugin</type>
-							<id>org.eclipse.jetty.continuation</id>
-							<restrictTo>
-								<version>${jetty.version}</version>
-							</restrictTo>
-						</filter>
-						<filter>
-							<type>eclipse-plugin</type>
-							<id>org.eclipse.jetty.deploy</id>
-							<restrictTo>
-								<version>${jetty.version}</version>
-							</restrictTo>
-						</filter>
-						<filter>
-							<type>eclipse-plugin</type>
-							<id>org.eclipse.jetty.http</id>
-							<restrictTo>
-								<version>${jetty.version}</version>
-							</restrictTo>
-						</filter>
-						<filter>
-							<type>eclipse-plugin</type>
-							<id>org.eclipse.jetty.io</id>
-							<restrictTo>
-								<version>${jetty.version}</version>
-							</restrictTo>
-						</filter>
-						<filter>
-							<type>eclipse-plugin</type>
-							<id>org.eclipse.jetty.jndi</id>
-							<restrictTo>
-								<version>${jetty.version}</version>
-							</restrictTo>
-						</filter>
-						<filter>
-							<type>eclipse-plugin</type>
-							<id>org.eclipse.jetty.osgi.boot</id>
-							<restrictTo>
-								<version>${jetty.version}</version>
-							</restrictTo>
-						</filter>
-						<filter>
-							<type>eclipse-plugin</type>
-							<id>org.eclipse.jetty.plus</id>
-							<restrictTo>
-								<version>${jetty.version}</version>
-							</restrictTo>
-						</filter>
-						<filter>
-							<type>eclipse-plugin</type>
-							<id>org.eclipse.jetty.security</id>
-							<restrictTo>
-								<version>${jetty.version}</version>
-							</restrictTo>
-						</filter>
-						<filter>
-							<type>eclipse-plugin</type>
-							<id>org.eclipse.jetty.server</id>
-							<restrictTo>
-								<version>${jetty.version}</version>
-							</restrictTo>
-						</filter>
-						<filter>
-							<type>eclipse-plugin</type>
-							<id>org.eclipse.jetty.servlet</id>
-							<restrictTo>
-								<version>${jetty.version}</version>
-							</restrictTo>
-						</filter>
-						<filter>
-							<type>eclipse-plugin</type>
-							<id>org.eclipse.jetty.util</id>
-							<restrictTo>
-								<version>${jetty.version}</version>
-							</restrictTo>
-						</filter>
-						<filter>
-							<type>eclipse-plugin</type>
-							<id>org.eclipse.jetty.webapp</id>
-							<restrictTo>
-								<version>${jetty.version}</version>
-							</restrictTo>
-						</filter>
-						<filter>
-							<type>eclipse-plugin</type>
-							<id>org.eclipse.jetty.xml</id>
-							<restrictTo>
-								<version>${jetty.version}</version>
-							</restrictTo>
-						</filter>
-						<!-- Restrict MongoDB to specific version to allow only one version included in plugins -->
-						<filter>
-							<type>eclipse-plugin</type>
-							<id>org.eclipse.orbit.mongodb</id>
-							<restrictTo>
-								<version>${mongodb.version}</version>
-							</restrictTo>
-						</filter>
-						<!-- Restrict lucene version to specific range to avoid version conflict in 4.9 build-->
-						<filter>
-							<type>eclipse-plugin</type>
-							<id>org.apache.lucene.core</id>
-							<restrictTo>
-							    <versionRange>${lucene.version}</versionRange>
-							</restrictTo>
-						</filter>
-						<filter>
-							<type>eclipse-plugin</type>
-							<id>org.apache.lucene.analyzers-smartcn</id>
-							<restrictTo>
-								<versionRange>${lucene.version}</versionRange>
-							</restrictTo>
-						</filter>
-						<filter>
-							<type>eclipse-plugin</type>
-							<id>org.apache.lucene.queryparser</id>
-							<restrictTo>
-								<versionRange>${lucene.version}</versionRange>
-							</restrictTo>
-						</filter>
-						<filter>
-							<type>eclipse-plugin</type>
-							<id>org.apache.lucene.analyzers-common</id>
-							<restrictTo>
-								<versionRange>${lucene.version}</versionRange>
-							</restrictTo>
-						</filter>
-					</filters>
+					<target>
+						<artifact>
+							<groupId>org.eclipse.birt</groupId>
+    							<artifactId>org.eclipse.birt.target</artifactId>
+							<version>4.18.0-SNAPSHOT</version>
+						</artifact>
+					</target>
+					
 				</configuration>
 			</plugin>
 
@@ -491,7 +420,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
+				<version>3.8.1</version>
 			</plugin>
 
 			<plugin>
@@ -508,7 +437,7 @@
 				<configuration>
 					<toolchains>
 						<jdk>
-							<id>JavaSE-1.8</id>
+							<id>JavaSE-11</id>
 						</jdk>
 					</toolchains>
 				</configuration>
@@ -541,6 +470,12 @@
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-surefire-plugin</artifactId>
 				<version>${tycho.version}</version>
+				<configuration>
+					<encoding>UTF-8</encoding>
+			        <inputEncoding>UTF-8</inputEncoding>
+					<outputEncoding>UTF-8</outputEncoding>
+					<argLine>-Dfile.encoding=UTF-8</argLine>
+				</configuration>
 <!-- Exclude integration tests that may hang or cause other occasional delays
 	in integration test. Uncomment the following config block to disable these
 	tests temporarely. -->
@@ -559,7 +494,7 @@
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.7.6.201602180812</version>
+				<version>0.8.4</version>
 				<executions>
 					<execution>
 						<id>jacoco-prepare-agent</id>

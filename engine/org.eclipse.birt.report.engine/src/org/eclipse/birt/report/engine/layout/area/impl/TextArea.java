@@ -19,7 +19,7 @@ import org.eclipse.birt.report.engine.layout.area.ITextArea;
 import org.eclipse.birt.report.engine.layout.pdf.font.FontInfo;
 
 import com.ibm.icu.text.Bidi;
-import com.lowagie.text.Font;
+import com.itextpdf.io.font.constants.FontStyles;
 
 public class TextArea extends AbstractArea implements ITextArea
 {
@@ -254,9 +254,10 @@ public class TextArea extends AbstractArea implements ITextArea
 	public int getWidth( )
 	{
 		int fontStyle = fi.getFontStyle( );
+		
 		//get width for text with simulated italic font.
 		if ( fi.getSimulation( )
-				&& ( Font.ITALIC == fontStyle || Font.BOLDITALIC == fontStyle ) )
+				&& ( FontStyles.ITALIC == fontStyle || FontStyles.BOLDITALIC == fontStyle ) )
 		{
 			width = (int) ( width + height
 					* EmitterUtil.getItalicHorizontalCoefficient( ) );

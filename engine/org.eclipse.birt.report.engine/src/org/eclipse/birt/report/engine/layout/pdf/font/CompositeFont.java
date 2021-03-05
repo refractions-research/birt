@@ -14,8 +14,8 @@ package org.eclipse.birt.report.engine.layout.pdf.font;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 
-import com.lowagie.text.Font;
-import com.lowagie.text.pdf.BaseFont;
+import com.itextpdf.io.font.constants.FontStyles;
+import com.itextpdf.kernel.font.PdfFont;
 
 /**
  * 
@@ -57,7 +57,7 @@ public class CompositeFont
 	 * base fonts used to test if the char exits, in the same order with
 	 * usedFonts
 	 */
-	BaseFont[] baseFonts;
+	PdfFont[] baseFonts;
 
 	/**
 	 * index of all the chars in the composite font. It is only used when
@@ -107,10 +107,10 @@ public class CompositeFont
 		}
 		else
 		{
-			baseFonts = new BaseFont[usedFonts.length];
+			baseFonts = new PdfFont[usedFonts.length];
 			for ( int i = 0; i < baseFonts.length; i++ )
 			{
-				baseFonts[i] = manager.createFont( usedFonts[i], Font.NORMAL );
+				baseFonts[i] = manager.createFont( usedFonts[i] );
 			}
 		}
 	}
@@ -177,7 +177,7 @@ public class CompositeFont
 				{
 					if ( baseFonts[i] != null )
 					{
-						if ( baseFonts[i].charExists( ch ) )
+						if ( baseFonts[i].containsGlyph( ch ) )
 						{
 							return usedFonts[i];
 						}

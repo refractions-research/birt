@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: BIRT Debug UI Plug-in
 Bundle-SymbolicName: org.eclipse.birt.report.debug.ui; singleton:=true
-Bundle-Version: 4.11.0.qualifier
+Bundle-Version: 4.18.0.qualifier
 Bundle-Vendor: Eclipse BIRT Project
 Bundle-Localization: plugin
 Export-Package: org.eclipse.birt.report.debug.internal.script.model,
@@ -47,6 +47,6 @@ Require-Bundle: org.eclipse.core.variables,
  org.eclipse.core.expressions
 Bundle-ActivationPolicy: lazy
 Plugin-Class: org.eclipse.birt.report.debug.ui.DebugUI
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Import-Package: com.ibm.icu.util;version="3.4.4"
 Automatic-Module-Name: org.eclipse.birt.report.debug.ui

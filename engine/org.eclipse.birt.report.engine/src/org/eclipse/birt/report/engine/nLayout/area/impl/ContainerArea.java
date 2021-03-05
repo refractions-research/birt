@@ -40,7 +40,8 @@ import org.eclipse.birt.report.model.api.ReportDesignHandle;
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.w3c.dom.css.CSSValue;
 
-import com.lowagie.text.Image;
+import com.itextpdf.io.image.ImageData;
+
 
 public abstract class ContainerArea extends AbstractArea
 		implements
@@ -361,7 +362,7 @@ public abstract class ContainerArea extends AbstractArea
 	protected void updateBackgroundImage( )
 	{
 		BackgroundImageInfo bgi = boxStyle.getBackgroundImage( );
-		Image img = null;
+		ImageData img = null;
 		if ( bgi != null )
 		{
 			img = bgi.getImageInstance( );
@@ -374,8 +375,8 @@ public abstract class ContainerArea extends AbstractArea
 					resolutionX = 96;
 					resolutionY = 96;
 				}
-				float imageWidth = img.getPlainWidth( ) / resolutionX * 72;
-				float imageHeight = img.getPlainHeight( ) / resolutionY * 72;
+				float imageWidth = img.getWidth( ) / resolutionX * 72;
+				float imageHeight = img.getHeight( ) / resolutionY * 72;
 				if ( content != null )
 				{
 					IStyle style = content.getComputedStyle( );

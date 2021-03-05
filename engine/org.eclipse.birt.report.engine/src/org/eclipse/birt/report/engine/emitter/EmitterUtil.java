@@ -50,7 +50,8 @@ import org.eclipse.birt.report.engine.util.SvgFile;
 import org.eclipse.birt.report.model.api.IResourceLocator;
 import org.eclipse.birt.report.model.api.ReportDesignHandle;
 
-import com.lowagie.text.Image;
+import com.itextpdf.io.image.ImageData;
+import com.itextpdf.io.image.ImageDataFactory;
 
 public class EmitterUtil
 {
@@ -153,9 +154,9 @@ public class EmitterUtil
 		}
 	}
 	
-	public static Image getImage( IImageContent content )
+	public static ImageData getImage( IImageContent content )
 	{
-		Image image = null;
+		ImageData image = null;
 		try
 		{
 			String uri = content.getURI( );
@@ -207,7 +208,7 @@ public class EmitterUtil
 									.transSvgToArray( new ByteArrayInputStream(
 											buffer ) );
 						}
-						image = Image.getInstance( buffer );
+						image = ImageDataFactory.create(buffer);
 					}
 					break;
 				case IImageContent.IMAGE_NAME :
@@ -217,19 +218,18 @@ public class EmitterUtil
 					if ( SvgFile.isSvg( mimeType, uri, extension ) )
 						data = SvgFile.transSvgToArray( in );
 					in.close( );
-					image = Image.getInstance( data );
+					image = ImageDataFactory.create(data);
 					break;
 
 				case IImageContent.IMAGE_URL :
 					if ( SvgFile.isSvg( uri ) )
 					{
-						image = Image.getInstance( SvgFile
+						image = ImageDataFactory.create( SvgFile
 								.transSvgToArray( uri ) );
 					}
 					else
 					{
-						image = Image
-								.getInstance( new URL( content.getURI( ) ) );
+						image = ImageDataFactory.create( new URL( content.getURI( ) ) );
 					}
 
 					break;

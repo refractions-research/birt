@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.birt"
       label="%featureName"
-      version="4.11.0.qualifier"
+      version="4.18.0.qualifier"
       provider-name="%providerName"
       plugin="org.eclipse.birt"
       image="eclipse_update_120.jpg">
@@ -71,13 +71,6 @@
       <import plugin="org.eclipse.datatools.connectivity" version="1.1.1" match="greaterOrEqual"/>
       <import feature="org.eclipse.draw2d" version="3.5.0" match="greaterOrEqual"/>
    </requires>
-
-   <plugin
-         id="javax.xml.stream"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
 
    <plugin
          id="org.eclipse.jetty.osgi.boot"
@@ -188,77 +181,63 @@
          id="org.apache.batik.bridge"
          download-size="0"
          install-size="0"
-         version="1.9.1.qualifier"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="org.apache.batik.css"
          download-size="0"
          install-size="0"
-         version="1.9.1.qualifier"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="org.apache.batik.dom"
          download-size="0"
          install-size="0"
-         version="1.9.1.qualifier"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="org.apache.batik.dom.svg"
          download-size="0"
          install-size="0"
-         version="1.9.1.qualifier"
-         unpack="false"/>
-
-   <plugin
-         id="org.apache.batik.ext.awt"
-         download-size="0"
-         install-size="0"
-         version="1.9.1.qualifier"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="org.apache.batik.parser"
          download-size="0"
          install-size="0"
-         version="1.9.1.qualifier"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="org.apache.batik.svggen"
          download-size="0"
          install-size="0"
-         version="1.9.1.qualifier"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="org.apache.batik.transcoder"
          download-size="0"
          install-size="0"
-         version="1.9.1.qualifier"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="org.apache.batik.util"
          download-size="0"
          install-size="0"
-         version="1.9.1.qualifier"
-         unpack="false"/>
-
-   <plugin
-         id="org.apache.batik.util.gui"
-         download-size="0"
-         install-size="0"
-         version="1.9.1.qualifier"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="org.apache.batik.xml"
          download-size="0"
          install-size="0"
-         version="1.9.1.qualifier"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
@@ -340,13 +319,6 @@
 
    <plugin
          id="org.eclipse.birt.report.designer.ui.lib.explorer"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.birt.report.designer.ui.preview.web"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -525,12 +497,6 @@
          version="0.0.0"/>
 
    <plugin
-         id="org.eclipse.birt.report.viewer"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
          id="org.eclipse.birt.report.engine.dataextraction"
          download-size="0"
          install-size="0"
@@ -608,35 +574,10 @@
          unpack="false"/>
 
    <plugin
-         id="javax.xml.rpc"
-         download-size="0"
-         install-size="0"
-         version="1.1.0.qualifier"/>
-
-   <plugin
-         id="javax.xml.soap"
-         download-size="0"
-         install-size="0"
-         version="1.2.0.qualifier"/>
-
-   <plugin
          id="org.apache.commons.discovery"
          download-size="0"
          install-size="0"
-         version="0.2.0.qualifier"/>
-
-   <plugin
-         id="org.apache.axis"
-         download-size="0"
-         install-size="0"
-         version="1.4.0.qualifier"/>
-
-   <plugin
-         id="javax.wsdl"
-         download-size="0"
-         install-size="0"
-         version="1.5.1.qualifier"
-         unpack="false"/>
+         version="0.0.0"/>
 
    <plugin
          id="org.eclipse.birt.report.engine.emitter.config"
@@ -670,7 +611,7 @@
          id="com.lowagie.text"
          download-size="0"
          install-size="0"
-         version="2.1.7.qualifier"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
@@ -687,13 +628,6 @@
 
    <plugin
          id="org.mozilla.javascript"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.birt.report.debug.ui"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -826,13 +760,6 @@
 
    <plugin
          id="org.eclipse.birt.report.data.oda.excel.ui"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.birt.axis.overlay"
          download-size="0"
          install-size="0"
          version="0.0.0"

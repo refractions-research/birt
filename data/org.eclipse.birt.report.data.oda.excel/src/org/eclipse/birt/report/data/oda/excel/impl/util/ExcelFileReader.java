@@ -29,8 +29,10 @@ import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.OpenXML4JException;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Row.MissingCellPolicy;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.eclipse.birt.report.data.oda.excel.ExcelODAConstants;
@@ -168,7 +170,7 @@ public class ExcelFileReader {
 				}
 				formulaEvaluator = workBook.getCreationHelper()
 						.createFormulaEvaluator();
-				workBook.setMissingCellPolicy(Row.RETURN_NULL_AND_BLANK);
+				workBook.setMissingCellPolicy(MissingCellPolicy.RETURN_NULL_AND_BLANK);
 				sheet = workBook.getSheet(workSheetList.get(currentSheetIndex));
 				if (sheet == null)
 					throw new OdaException(
@@ -274,11 +276,11 @@ public class ExcelFileReader {
 		if (cell == null)
 			return ExcelODAConstants.EMPTY_STRING;
 
-		if (cell.getCellType() == Cell.CELL_TYPE_FORMULA) {
+		if (cell.getCellType() == CellType.FORMULA) {
 			return resolveFormula(cell);
 		}
 
-		if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
+		if (cell.getCellType() == CellType.NUMERIC) {
 			if(	HSSFDateUtil.isCellDateFormatted(cell) ){		
 				Date myjavadate =  HSSFDateUtil.getJavaDate(cell.getNumericCellValue());
 				return sdf.format( myjavadate );
@@ -293,10 +295,10 @@ public class ExcelFileReader {
 		if (formulaEvaluator == null)
 			return cell.toString();
 		switch (formulaEvaluator.evaluateFormulaCell(cell)) {
-		case Cell.CELL_TYPE_BOOLEAN:
+		case BOOLEAN:
 			return ((Boolean) cell.getBooleanCellValue()).toString();
 
-		case Cell.CELL_TYPE_NUMERIC:
+		case NUMERIC:
 			if (org.apache.poi.ss.usermodel.DateUtil.isCellDateFormatted(cell) ){
 				//need to check for nulls
 				//double myexdate = org.apache.poi.ss.usermodel.DateUtil.getExcelDate(cell.getDateCellValue());
@@ -305,7 +307,7 @@ public class ExcelFileReader {
 			}
 			return ((Double) cell.getNumericCellValue()).toString();
 
-		case Cell.CELL_TYPE_STRING:
+		case STRING:
 			return cell.getStringCellValue();
 
 		default:

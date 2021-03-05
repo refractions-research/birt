@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: BIRT CORE Tests Plug-in
 Bundle-SymbolicName: org.eclipse.birt.report.tests.engine; singleton:=true
 Bundle-ClassPath: test-engine.jar
-Bundle-Version: 4.11.0.qualifier
+Bundle-Version: 4.18.0.qualifier
 Bundle-Activator: org.eclipse.birt.report.tests.engine.plugin.EnginePlugin
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.junit;resolution:=optional,
@@ -15,5 +15,5 @@ Require-Bundle: org.junit;resolution:=optional,
  org.eclipse.birt.report.engine.emitter.html,
  org.eclipse.birt.report.model
 Bundle-Vendor: Eclipse BIRT Project
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Automatic-Module-Name: org.eclipse.birt.report.tests.engine

@@ -20,6 +20,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.math.BigDecimal;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -177,13 +180,13 @@ public class CSVDataExtractionImplTest extends TestCase
 					},
 			// case for testing encoding
 			new Object[] {
-					"\u00fc\u4f60\u00df\u00e9", //$NON-NLS-1$
+					"\u00fc\u4f60\u00df\u00e9",
 					Integer.valueOf(0),
 					null,
 					Double.valueOf( 0.0 )
 					}
 		};
-		
+
 		results = new MockExtractionResults(
 				TEST_DATA_COLUMNS,
 				TEST_DATA_TYPES,
@@ -605,6 +608,7 @@ public class CSVDataExtractionImplTest extends TestCase
 		
 		DataExtractionOption deOptions = new DataExtractionOption(allOptions);
 		deOptions.setOutputStream( out );		
+		
 		extract.initialize( null, deOptions );
 		return extract;
 	}
@@ -623,7 +627,7 @@ public class CSVDataExtractionImplTest extends TestCase
 		option.setLocale( Locale.ENGLISH );
 		option.setLocaleNeutralFormat( true );
 		
-		//option.setEncoding( ENCODING_UTF_8 );
+		option.setEncoding( StandardCharsets.UTF_8.displayName() );
 		option.setSelectedColumns( null );
 		option.setSeparator( ICSVDataExtractionOption.SEPARATOR_COMMA );
 		return option;
@@ -643,7 +647,7 @@ public class CSVDataExtractionImplTest extends TestCase
 		try
 		{		
 			int rowIndex = 0;
-			fileInput = new BufferedReader( new InputStreamReader( new FileInputStream(file) ) );
+			fileInput = new BufferedReader( new InputStreamReader( new FileInputStream(file)) );
 			resultInput = new BufferedReader( new InputStreamReader( new ByteArrayInputStream(byteArray) ) );
 			
 			String fileContent = null;

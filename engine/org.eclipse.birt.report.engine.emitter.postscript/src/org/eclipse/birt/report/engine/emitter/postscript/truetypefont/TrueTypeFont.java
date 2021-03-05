@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -26,10 +28,10 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.ExceptionConverter;
-import com.lowagie.text.pdf.IntHashtable;
-import com.lowagie.text.pdf.RandomAccessFileOrArray;
+import com.itextpdf.io.font.otf.FontReadingException;
+import com.itextpdf.io.source.FileChannelRandomAccessSource;
+import com.itextpdf.io.source.RandomAccessFileOrArray;
+import com.itextpdf.io.util.IntHashtable;
 
 /**
  * Reads a Truetype font
@@ -315,7 +317,7 @@ public class TrueTypeFont
 	{
 	}
 
-	TrueTypeFont( String ttFile ) throws DocumentException, IOException
+	TrueTypeFont( String ttFile ) throws FontReadingException, IOException
 	{
 		this( ttFile, false );
 	}
@@ -337,7 +339,7 @@ public class TrueTypeFont
 	 * @throws IOException
 	 *             the font file could not be read
 	 */
-	TrueTypeFont( String ttFile, boolean justNames ) throws DocumentException,
+	TrueTypeFont( String ttFile, boolean justNames ) throws FontReadingException,
 			IOException
 	{
 		this.justNames = justNames;
@@ -359,12 +361,12 @@ public class TrueTypeFont
 			process( );
 		}
 		else
-			throw new DocumentException( fileName + style
+			throw new FontReadingException( fileName + style
 					+ " is not a TTF, OTF or TTC font file." );
 	}
 
 	public static TrueTypeFont getInstance( String fileName )
-			throws DocumentException, IOException
+			throws FontReadingException, IOException
 	{
 		File file = new File( fileName );
 		if ( fonts.containsKey( file ) )
@@ -428,7 +430,7 @@ public class TrueTypeFont
 	 * @throws IOException
 	 *             the font file could not be read
 	 */
-	void fillTables( ) throws DocumentException, IOException
+	void fillTables( ) throws FontReadingException, IOException
 	{
 		fillHead( );
 		fillHHea( );
@@ -436,7 +438,7 @@ public class TrueTypeFont
 		processPost( );
 	}
 
-	private void processPost( ) throws DocumentException, IOException
+	private void processPost( ) throws FontReadingException, IOException
 	{
 		int[] tableLocation = getTableLocation( "post" );
 		if ( tableLocation == null )
@@ -454,7 +456,7 @@ public class TrueTypeFont
 		isFixedPitch = rf.readInt( ) != 0;
 	}
 
-	private void fillOS( ) throws DocumentException, IOException
+	private void fillOS( ) throws FontReadingException, IOException
 	{
 		int[] tableLocation = getTableLocation( "OS/2" );
 		rf.seek( tableLocation[0] );
@@ -503,7 +505,7 @@ public class TrueTypeFont
 			os_2.sCapHeight = (int) ( 0.7 * head.unitsPerEm );
 	}
 
-	private void fillHHea( ) throws DocumentException, IOException
+	private void fillHHea( ) throws FontReadingException, IOException
 	{
 		int[] tableLocation = getTableLocation( "hhea" );
 		rf.seek( tableLocation[0] + 4 );
@@ -520,7 +522,7 @@ public class TrueTypeFont
 		hhea.numberOfHMetrics = rf.readUnsignedShort( );
 	}
 
-	private void fillHead( ) throws DocumentException, IOException
+	private void fillHead( ) throws FontReadingException, IOException
 	{
 		int tableLocation[] = getTableLocation( "head" );
 		rf.seek( tableLocation[0] + 16 );
@@ -537,12 +539,12 @@ public class TrueTypeFont
 		head.locaBytesPerEntry = indexToLocFormat == 0 ? 2 : 4;
 	}
 
-	private int[] getTableLocation( String name ) throws DocumentException
+	private int[] getTableLocation( String name ) throws FontReadingException
 	{
 		int[] table_location;
 		table_location = (int[]) positionTables.get( name );
 		if ( table_location == null )
-			throw new DocumentException( "Table 'head' does not exist in "
+			throw new FontReadingException( "Table 'head' does not exist in "
 					+ fileName + style );
 		return table_location;
 	}
@@ -556,12 +558,12 @@ public class TrueTypeFont
 	 *             the font file could not be read
 	 * @return the Postscript font name
 	 */
-	String getBaseFont( ) throws DocumentException, IOException
+	String getBaseFont( ) throws FontReadingException, IOException
 	{
 		int table_location[];
 		table_location = (int[]) positionTables.get( "name" );
 		if ( table_location == null )
-			throw new DocumentException( "Table 'name' does not exist in "
+			throw new FontReadingException( "Table 'name' does not exist in "
 					+ fileName + style );
 		rf.seek( table_location[0] + 2 );
 		int numRecords = rf.readUnsignedShort( );
@@ -597,12 +599,12 @@ public class TrueTypeFont
 	 * @throws IOException
 	 *             on error
 	 */
-	String[][] getNames( int id ) throws DocumentException, IOException
+	String[][] getNames( int id ) throws FontReadingException, IOException
 	{
 		int table_location[];
 		table_location = (int[]) positionTables.get( "name" );
 		if ( table_location == null )
-			throw new DocumentException( "Table 'name' does not exist in "
+			throw new FontReadingException( "Table 'name' does not exist in "
 					+ fileName + style );
 		rf.seek( table_location[0] + 2 );
 		int numRecords = rf.readUnsignedShort( );
@@ -618,7 +620,7 @@ public class TrueTypeFont
 			int offset = rf.readUnsignedShort( );
 			if ( nameID == id )
 			{
-				int pos = rf.getFilePointer( );
+				long pos = rf.getPosition( );
 				rf.seek( table_location[0] + startOfStorage + offset );
 				String name;
 				if ( platformID == 0 || platformID == 3
@@ -652,28 +654,28 @@ public class TrueTypeFont
 	 * @throws IOException
 	 *             the font file could not be read
 	 */
-	void process( ) throws DocumentException, IOException
+	void process( ) throws FontReadingException, IOException
 	{
 		positionTables = new HashMap<String, int[]>( );
 		metadataTables = new HashMap<String, byte[]>( );
 
 		try
 		{
-			rf = new RandomAccessFileOrArray( fileName );
+			rf = new RandomAccessFileOrArray( new FileChannelRandomAccessSource(FileChannel.open(Paths.get(fileName))) );
 			if ( ttcIndex.length( ) > 0 )
 			{
 				int dirIdx = Integer.parseInt( ttcIndex );
 				if ( dirIdx < 0 )
-					throw new DocumentException( "The font index for "
+					throw new FontReadingException( "The font index for "
 							+ fileName + " must be positive." );
 				String mainTag = readStandardString( 4 );
 				if ( !mainTag.equals( "ttcf" ) )
-					throw new DocumentException( fileName
+					throw new FontReadingException( fileName
 							+ " is not a valid TTC file." );
 				rf.skipBytes( 4 );
 				int dirCount = rf.readInt( );
 				if ( dirIdx >= dirCount )
-					throw new DocumentException( "The font index for "
+					throw new FontReadingException( "The font index for "
 							+ fileName + " must be between 0 and "
 							+ ( dirCount - 1 ) + ". It was " + dirIdx + "." );
 				rf.skipBytes( dirIdx * 4 );
@@ -683,7 +685,7 @@ public class TrueTypeFont
 			rf.readFully( directoryRawData );
 			int ttId = Util.getInt( directoryRawData, 0 );
 			if ( ttId != 0x00010000 && ttId != 0x4F54544F )
-				throw new DocumentException( fileName
+				throw new FontReadingException( fileName
 						+ " is not a valid TTF or OTF file." );
 			int num_tables = Util.getUnsignedShort( directoryRawData, 4 );
 			for ( int k = 0; k < num_tables; ++k )
@@ -750,7 +752,7 @@ public class TrueTypeFont
 		}
 		catch ( Exception e )
 		{
-			throw new ExceptionConverter( e );
+			throw new IOException( e );
 		}
 	}
 
@@ -785,12 +787,12 @@ public class TrueTypeFont
 	 * @throws IOException
 	 *             the font file could not be read
 	 */
-	protected void readGlyphWidths( ) throws DocumentException, IOException
+	protected void readGlyphWidths( ) throws FontReadingException, IOException
 	{
 		int table_location[];
 		table_location = (int[]) positionTables.get( "hmtx" );
 		if ( table_location == null )
-			throw new DocumentException( "Table 'hmtx' does not exist in "
+			throw new FontReadingException( "Table 'hmtx' does not exist in "
 					+ fileName + style );
 		rf.seek( table_location[0] );
 		GlyphWidths = new int[hhea.numberOfHMetrics];
@@ -816,12 +818,12 @@ public class TrueTypeFont
 		return GlyphWidths[glyph];
 	}
 
-	private void readBbox( ) throws DocumentException, IOException
+	private void readBbox( ) throws FontReadingException, IOException
 	{
 		int tableLocation[];
 		tableLocation = (int[]) positionTables.get( "head" );
 		if ( tableLocation == null )
-			throw new DocumentException( "Table 'head' does not exist in "
+			throw new FontReadingException( "Table 'head' does not exist in "
 					+ fileName + style );
 		rf.seek( tableLocation[0] + HEAD_LOCA_FORMAT_OFFSET );
 		boolean locaShortTable = ( rf.readUnsignedShort( ) == 0 );
@@ -846,7 +848,7 @@ public class TrueTypeFont
 		}
 		tableLocation = (int[]) positionTables.get( "glyf" );
 		if ( tableLocation == null )
-			throw new DocumentException( "Table 'glyf' does not exist in "
+			throw new FontReadingException( "Table 'glyf' does not exist in "
 					+ fileName + style );
 		int tableGlyphOffset = tableLocation[0];
 		bboxes = new int[locaTable.length - 1][];
@@ -875,12 +877,12 @@ public class TrueTypeFont
 	 * @throws IOException
 	 *             the font file could not be read
 	 */
-	public void readCMaps( ) throws DocumentException, IOException
+	public void readCMaps( ) throws FontReadingException, IOException
 	{
 		int table_location[];
 		table_location = (int[]) positionTables.get( "cmap" );
 		if ( table_location == null )
-			throw new DocumentException( "Table 'cmap' does not exist in "
+			throw new FontReadingException( "Table 'cmap' does not exist in "
 					+ fileName + style );
 		rf.seek( table_location[0] );
 		rf.skipBytes( 2 );
@@ -1194,7 +1196,7 @@ public class TrueTypeFont
 		}
 		catch ( UnsupportedEncodingException e )
 		{
-			throw new ExceptionConverter( e );
+			throw new RuntimeException( e );
 		}
 	}
 
@@ -1299,7 +1301,8 @@ public class TrueTypeFont
 			int[] tableLocation = (int[]) positionTables.get( "loca" );
 			int locaLength = tableLocation[1];
 			int glyphCount = locaLength / head.locaBytesPerEntry - 1;
-			rf = new RandomAccessFileOrArray( fileName );
+			
+			rf = new RandomAccessFileOrArray( new FileChannelRandomAccessSource(FileChannel.open(Paths.get(fileName))) );
 			out.println( "18 dict begin" );
 			out.println( "/CIDFontName /" + fontName + " def");
 			out.println( "/PaintType 0 def" );
@@ -1637,14 +1640,15 @@ public class TrueTypeFont
 						data.addAll( datas );
 					}
 				}
+				catch ( FontReadingException de )
+				{
+					logger.log( Level.WARNING, "failed to add table: " + name );
+				}
 				catch ( IOException ioe )
 				{
 					logger.log( Level.WARNING, "failed to add table: " + name );
 				}
-				catch ( DocumentException de )
-				{
-					logger.log( Level.WARNING, "failed to add table: " + name );
-				}
+				
 				offset = newOffset;
 			}
 			long adjustment = calculateChecksumAdjustment( metadata, data );
@@ -1723,7 +1727,7 @@ public class TrueTypeFont
 			return result;
 		}
 
-		private List<byte[]> readTable( String name ) throws DocumentException,
+		private List<byte[]> readTable( String name ) throws FontReadingException,
 				IOException
 		{
 			int[] tableLocation = getTableLocation( name );

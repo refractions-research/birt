@@ -37,7 +37,7 @@ import org.eclipse.birt.report.engine.ooxml.ImageManager.ImagePart;
 import org.eclipse.birt.report.engine.ooxml.util.OOXmlUtil;
 import org.eclipse.birt.report.engine.ooxml.writer.OOXmlWriter;
 
-import com.lowagie.text.Font;
+import com.itextpdf.io.font.constants.FontStyles;
 
 /**
  * This class is used use to generate PPTX shapes.
@@ -562,8 +562,8 @@ public class PPTXCanvas
 			writer.attribute( "u", "sng" );
 		}
 		writer.attribute( "sz", (int) ( fontSize * 100 ) );
-		boolean isItalic = ( fontStyle & Font.ITALIC ) != 0;
-		boolean isBold = ( fontStyle & Font.BOLD ) != 0;
+		boolean isItalic = ( fontStyle & FontStyles.ITALIC ) != 0;
+		boolean isBold = ( fontStyle & FontStyles.BOLD ) != 0;
 		if ( isItalic )
 		{
 			writer.attribute( "i", 1 );

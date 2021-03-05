@@ -2,14 +2,16 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: BIRT Web Viewer
 Bundle-SymbolicName: org.eclipse.birt.report.viewer; singleton:=true
-Bundle-Version: 4.11.0.qualifier
-Bundle-ClassPath: ., viewer.jar,
+Bundle-Version: 4.18.0.qualifier
+Bundle-ClassPath: .,
+ viewer.jar,
  birt/WEB-INF/classes,
- birt/WEB-INF/lib/viewservlets.jar
+ birt/WEB-INF/lib/viewservlets.jar,
+ birt/WEB-INF/lib/jaxrpc.jar
 Bundle-Activator: org.eclipse.birt.report.viewer.ViewerPlugin
 Bundle-Vendor: Eclipse BIRT Project
 Bundle-Localization: plugin
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Import-Package: javax.servlet;version="2.4.0",
  javax.servlet.http;version="2.4.0",
  javax.servlet.jsp;version="2.0.0",
@@ -28,8 +30,6 @@ Export-Package: org.eclipse.birt.report.filter,
  org.eclipse.birt.report.viewer.utilities
 Require-Bundle: org.eclipse.core.runtime;bundle-version="[3.2.0,4.0.0)",
  org.eclipse.core.resources;bundle-version="[3.2.0,4.0.0)",
- org.apache.axis;bundle-version="[1.3.0,2.0.0)",
- javax.xml.rpc;bundle-version="[1.1.0,2.0.0)",
  org.apache.jasper;bundle-version="5.5.17";resolution:=optional,
  org.eclipse.equinox.jsp.jasper.registry;bundle-version="[1.0.0,2.0.0)",
  org.eclipse.equinox.http.registry;bundle-version="[1.0.0,2.0.0)",
@@ -43,17 +43,17 @@ Require-Bundle: org.eclipse.core.runtime;bundle-version="[3.2.0,4.0.0)",
  org.eclipse.birt.report.designer.ui;bundle-version="[2.5.1,5.0.0)";resolution:=optional,
  org.eclipse.birt.chart.engine;bundle-version="[2.2.0,5.0.0)";resolution:=optional,
  org.eclipse.birt.report.engine.dataextraction;bundle-version="[2.3.0,5.0.0)",
- org.apache.xerces;bundle-version="[2.8.0,3.0.0)";resolution:=optional,
+ org.apache.xerces;bundle-version="[2.12.1,3.0.0)";resolution:=optional,
  org.eclipse.birt.report.item.crosstab.core;bundle-version="[2.2.0,5.0.0)";resolution:=optional,
  org.eclipse.birt.report.designer.core,
- org.eclipse.jetty.osgi.boot,
  org.eclipse.jetty.server,
  org.eclipse.jetty.util,
  org.eclipse.jetty.webapp,
- org.eclipse.jetty.plus,
  org.eclipse.jetty.servlet,
  org.eclipse.jetty.http,
- org.apache.jasper.glassfish;bundle-version="2.2.2"
+ org.apache.jasper.glassfish;bundle-version="2.2.2",
+ org.eclipse.jetty.osgi.boot,
+ org.apache.axis;bundle-version="1.4.0"
 Bundle-ActivationPolicy: lazy
 Eclipse-BuddyPolicy: registered
 Eclipse-BundleShape: dir

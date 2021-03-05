@@ -14,12 +14,12 @@ package org.eclipse.birt.report.engine.layout.pdf.font;
 import org.eclipse.birt.report.engine.emitter.EmitterUtil;
 import org.eclipse.birt.report.engine.layout.PDFConstants;
 
-import com.lowagie.text.Font;
-import com.lowagie.text.pdf.BaseFont;
+import com.itextpdf.io.font.constants.FontStyles;
+import com.itextpdf.kernel.font.PdfFont;
 
 public class FontInfo
 {
-	private BaseFont bf;
+	private PdfFont bf;
 
 	private float fontSize;
 
@@ -36,7 +36,7 @@ public class FontInfo
 	private float linethroughPosition;
 	private float overlinePosition;
 
-	public FontInfo( BaseFont bf, float fontSize, int fontStyle, int fontWeight,
+	public FontInfo( PdfFont bf, float fontSize, int fontStyle, int fontWeight,
 			boolean simulation )
 	{
 		this.bf = bf;
@@ -77,29 +77,21 @@ public class FontInfo
 			return;
 		}
 
-		float ascent = bf.getFontDescriptor( BaseFont.AWT_ASCENT, fontSize );
-		float descent = bf.getFontDescriptor( BaseFont.AWT_DESCENT, fontSize );
-		if ( BaseFont.FONT_TYPE_T1 == bf.getFontType( ) )
-		{
-			// uses the FontBBox for Type1 font, refer to the implementation
-			// of free type API
-			ascent = bf.getFontDescriptor( BaseFont.BBOXURY, fontSize );
-			descent = bf.getFontDescriptor( BaseFont.BBOXLLY, fontSize );
+		float ascent = (float) (bf.getFontProgram().getFontMetrics().getAscender()/ 1000.0) * fontSize;
+		float descent = (float) (bf.getFontProgram().getFontMetrics().getDescender( )/ 1000.0) * fontSize;
+		
+		if (ascent == 0 ) {
+			ascent = (float) (bf.getFontProgram().getFontMetrics().getBbox()[3] / 1000.0) * fontSize;
+			descent = (float) (bf.getFontProgram().getFontMetrics().getBbox()[1]/ 1000.0) * fontSize;
 		}
-		if ( descent > 0 )
-		{
-			// In some cases, the Type1 font (perhaps loading from PFM?) return
-			// positive descent
-			descent = -descent;
-		}
-		float baseline = bf.getFontDescriptor( BaseFont.UNDERLINE_POSITION,
-				fontSize );
-		float baseline_thickness = bf.getFontDescriptor(
-				BaseFont.UNDERLINE_THICKNESS, fontSize );
-		float strike = bf.getFontDescriptor( BaseFont.STRIKETHROUGH_POSITION,
-				fontSize );
-		float strike_thickness = bf.getFontDescriptor(
-				BaseFont.STRIKETHROUGH_THICKNESS, fontSize );
+		
+		if ( descent > 0 ) descent = -descent;
+		
+		float strike = (float) (bf.getFontProgram().getFontMetrics().getStrikeoutPosition()/ 1000.0) * fontSize;
+		float strike_thickness = (float) (bf.getFontProgram().getFontMetrics().getStrikeoutSize()/ 1000.0) * fontSize;
+		
+		float baseline = (float) (bf.getFontProgram().getFontMetrics().getUnderlinePosition() / 1000.0) * fontSize;
+		float baseline_thickness = (float) (bf.getFontProgram().getFontMetrics().getUnderlineThickness() / 1000.0) * fontSize;
 
 		lineWidth = baseline_thickness;
 		if ( lineWidth == 0 )
@@ -116,7 +108,7 @@ public class FontInfo
 		underlinePosition = ascent - baseline - lineWidth / 2;
 		if ( strike == 0 )
 		{
-			linethroughPosition = fontHeight / 2 - lineWidth / 2;
+			linethroughPosition =  ascent+ descent - lineWidth / 2;
 		}
 		else
 		{
@@ -131,7 +123,7 @@ public class FontInfo
 		this.simulation = simulation;
 	}
 
-	public BaseFont getBaseFont( )
+	public PdfFont getBaseFont( )
 	{
 		return this.bf;
 	}
@@ -199,14 +191,14 @@ public class FontInfo
 			return word.length( ) * ( fontSize / 2 );
 		}
 
-		return bf.getWidthPoint( word, fontSize );
+		return bf.getWidth( word, fontSize );
 	}
 	
 	public int getItalicAdjust( )
 	{
 		// get width for text with simulated italic font.
-		if ( simulation && ( Font.ITALIC == fontStyle
-				|| Font.BOLDITALIC == fontStyle ) )
+		if ( simulation && ( FontStyles.ITALIC == fontStyle
+				|| FontStyles.BOLDITALIC == fontStyle ) )
 		{
 			return (int) ( fontHeight
 					* EmitterUtil.getItalicHorizontalCoefficient( ) );
@@ -227,7 +219,8 @@ public class FontInfo
 	public String getFontName( )
 	{
 		assert bf != null;
-		String[][] familyFontNames = bf.getFamilyFontName( );
+		
+		String[][] familyFontNames = bf.getFontProgram().getFontNames().getFamilyName();
 		String[] family = familyFontNames[familyFontNames.length - 1];
 		return family[family.length - 1];
 	}

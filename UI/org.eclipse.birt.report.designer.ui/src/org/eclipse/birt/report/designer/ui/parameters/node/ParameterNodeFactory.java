@@ -14,8 +14,8 @@ package org.eclipse.birt.report.designer.ui.parameters.node;
 import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.birt.report.designer.ui.parameters.IParameterGroup;
 import org.eclipse.birt.report.designer.ui.parameters.IParameter;
+import org.eclipse.birt.report.designer.ui.parameters.IParameterGroup;
 import org.eclipse.birt.report.designer.ui.parameters.ParameterFactory;
 import org.eclipse.birt.report.engine.api.IGetParameterDefinitionTask;
 

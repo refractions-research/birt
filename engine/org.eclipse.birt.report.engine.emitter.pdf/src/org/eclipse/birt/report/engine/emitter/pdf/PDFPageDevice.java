@@ -19,7 +19,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -40,16 +39,16 @@ import org.eclipse.birt.report.engine.layout.emitter.IPage;
 import org.eclipse.birt.report.engine.layout.emitter.IPageDevice;
 
 import com.ibm.icu.util.ULocale;
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Rectangle;
-import com.lowagie.text.pdf.BaseFont;
-import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfImportedPage;
-import com.lowagie.text.pdf.PdfOutline;
-import com.lowagie.text.pdf.PdfReader;
-import com.lowagie.text.pdf.PdfTemplate;
-import com.lowagie.text.pdf.PdfWriter;
+import com.itextpdf.io.image.ImageData;
+import com.itextpdf.kernel.pdf.CompressionConstants;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfName;
+import com.itextpdf.kernel.pdf.PdfOutline;
+import com.itextpdf.kernel.pdf.PdfPage;
+import com.itextpdf.kernel.pdf.PdfReader;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Canvas;
+
 
 public class PDFPageDevice implements IPageDevice
 {
@@ -57,7 +56,7 @@ public class PDFPageDevice implements IPageDevice
 	/**
 	 * The pdf Document object created by iText
 	 */
-	protected Document doc = null;
+	protected PdfDocument doc = null;
 
 	/**
 	 * The Pdf Writer
@@ -73,9 +72,9 @@ public class PDFPageDevice implements IPageDevice
 
 	protected PDFPage currentPage = null;
 
-	protected HashMap<Float, PdfTemplate> templateMap = new HashMap<Float, PdfTemplate>( );
+	protected HashMap<Float, Canvas> templateMap = new HashMap<Float, Canvas>( );
 
-	protected HashMap<String, PdfTemplate> imageCache = new HashMap<String, PdfTemplate>( );
+	protected HashMap<String, ImageData> imageCache = new HashMap<>( );
 
 	/**
 	 * the iText and Birt engine version info.
@@ -97,36 +96,40 @@ public class PDFPageDevice implements IPageDevice
 	{
 		this.context = context;
 		this.report = report;
-		doc = new Document( );
+		
+		
 		try
 		{
-			writer = PdfWriter.getInstance( doc, new BufferedOutputStream(
-					output ) );
-			writer.setFullCompression( );
-			writer.setRgbTransparencyBlending( true );
+			writer = new PdfWriter(new BufferedOutputStream(output));
+			doc = new PdfDocument( writer );
+			
+			writer.setCompressionLevel(CompressionConstants.BEST_COMPRESSION );
+//			writer.setRgbTransparencyBlending( true );
 			EngineResourceHandle handle = new EngineResourceHandle(
 					ULocale.forLocale( context.getLocale( ) ) );
 
 			String creator = handle.getMessage( MessageConstants.PDF_CREATOR,
 					versionInfo );
-			doc.addCreator( creator );
-
-			if ( null != author )
+			doc.getDocumentInfo().setCreator(creator);
+			
+			if ( null != author ) 
 			{
-				doc.addAuthor( author );
+				doc.getDocumentInfo().setAuthor( author );
 			}
-			if ( null != title )
+			
+			if ( null != title ) 
 			{
-				doc.addTitle( title );
+				doc.getDocumentInfo().setTitle( title );
 			}
+			
 			if ( null != subject )
 			{
-				doc.addSubject( subject );
-				doc.addKeywords( subject );
+				doc.getDocumentInfo().setSubject( subject );
+				doc.getDocumentInfo().setKeywords( subject );
 			}
 			if ( description != null )
 			{
-				doc.addHeader( "Description", description );
+				doc.getDocumentInfo().setMoreInfo( "Description", description );
 			}
 			
 			//Add in prepending PDF's
@@ -217,18 +220,14 @@ public class PDFPageDevice implements IPageDevice
 					if (pdfs.size() > 0)
 					{
 						//this hasn't been initialized yet, open the doc
-						if ( !this.doc.isOpen( ) )
-							this.doc.open( );
+//						if ( !this.doc.isOpen( ) )
+//							this.doc.open( );
 						concatPDFs(pdfs, true);
 					}
 				}
 			}
 			//End Modification
 		}
-		catch ( DocumentException de )
-		{
-			logger.log( Level.SEVERE, de.getMessage( ), de );
-		} 
 		catch (BirtException be) {
 			logger.log( Level.SEVERE, be.getMessage( ), be );
 		}
@@ -241,29 +240,21 @@ public class PDFPageDevice implements IPageDevice
 	 */
 	public PDFPageDevice( OutputStream output )
 	{
-		doc = new Document( );
-		try
-		{
-			writer = PdfWriter.getInstance( doc, new BufferedOutputStream(
-					output ) );
-		}
-		catch ( DocumentException de )
-		{
-			logger.log( Level.SEVERE, de.getMessage( ), de );
-		}
+		writer = new PdfWriter(new BufferedOutputStream(output));
+		doc = new PdfDocument( writer );
 	}
 
-	public void setPDFTemplate( Float scale, PdfTemplate totalPageTemplate )
+	public void setPDFTemplate( Float scale, Canvas totalPageTemplate )
 	{
 		templateMap.put( scale, totalPageTemplate );
 	}
 
-	public HashMap<Float, PdfTemplate> getTemplateMap( )
+	public HashMap<Float, Canvas> getTemplateMap( )
 	{
 		return templateMap;
 	}
 
-	public PdfTemplate getPDFTemplate( Float scale )
+	public Canvas getPDFTemplate( Float scale )
 	{
 		return templateMap.get( scale );
 	}
@@ -273,18 +264,13 @@ public class PDFPageDevice implements IPageDevice
 		return templateMap.containsKey( scale );
 	}
 
-	public HashMap<String, PdfTemplate> getImageCache( )
+	public HashMap<String, ImageData> getImageCache( )
 	{
 		return imageCache;
 	}
 
 	public void close( ) throws Exception
 	{
-		if ( !doc.isOpen( ) )
-		{
-			// to ensure we create a PDF file
-			doc.open( );
-		}
 		
 		//modified here. This will grab a global variable called 
 		//appendPDF, and take a list of strings of PDF files to 
@@ -378,11 +364,10 @@ public class PDFPageDevice implements IPageDevice
 		}
 		//End Modification
 			    
-		writer.setPageEmpty( false );
-		if ( doc.isOpen( ) )
-		{
-			doc.close( );
-		}
+//		writer.setPageEmpty( false );
+		doc.close();
+		writer.flush();
+		writer.close();
 	}
 
 	public IPage newPage( int width, int height, Color backgroundColor )
@@ -396,20 +381,27 @@ public class PDFPageDevice implements IPageDevice
 
 	protected PDFPage createPDFPage( int pageWidth, int pageHeight )
 	{
-		return new PDFPage( pageWidth, pageHeight, doc, writer, this );
+		return new PDFPage( pageWidth, pageHeight, this, doc );
 	}
 
 	public void createTOC( Set<String> bookmarks )
 	{
 		// we needn't create the TOC if there is no page in the PDF file.
 		// the doc is opened only if the user invokes newPage.
-		if ( !doc.isOpen( ) )
+//		if ( !doc.isOpen( ) )
+//		{
+//			return;
+//		}
+		if (doc.getNumberOfPages() == 0)
 		{
 			return;
+		
 		}
+		
 		if ( bookmarks.isEmpty( ) )
 		{
-			writer.setViewerPreferences( PdfWriter.PageModeUseNone );
+			doc.getCatalog().put(PdfName.PageMode, PdfName.UseNone);
+//			writer.setViewerPreferences( PdfWriter.PageModeUseNone );
 			return;
 		}
 		ULocale ulocale = null;
@@ -427,20 +419,23 @@ public class PDFPageDevice implements IPageDevice
 				ulocale );
 		if ( tocTree == null )
 		{
-			writer.setViewerPreferences( PdfWriter.PageModeUseNone );
+//			writer.setViewerPreferences( PdfWriter.PageModeUseNone );
+			doc.getCatalog().put(PdfName.PageMode, PdfName.UseNone);
 		}
 		else
 		{
 			TOCNode rootNode = tocTree.getRoot( );
 			if ( rootNode == null || rootNode.getChildren( ).isEmpty( ) )
 			{
-				writer.setViewerPreferences( PdfWriter.PageModeUseNone );
+//				writer.setViewerPreferences( PdfWriter.PageModeUseNone );
+				doc.getCatalog().put(PdfName.PageMode, PdfName.UseNone);
 			}
 			else
 			{
-				writer.setViewerPreferences( PdfWriter.PageModeUseOutlines );
-				TOCHandler tocHandler = new TOCHandler( rootNode, writer
-						.getDirectContent( ).getRootOutline( ), bookmarks );
+				doc.getCatalog().put(PdfName.PageMode, PdfName.UseOutlines);
+//				writer.setViewerPreferences( PdfWriter.PageModeUseOutlines );
+				
+				TOCHandler tocHandler = new TOCHandler( rootNode, doc.getOutlines(true), bookmarks );
 				tocHandler.createTOC( );
 			}
 		}
@@ -463,67 +458,17 @@ public class PDFPageDevice implements IPageDevice
 	 * @param paginate
 	 */
 	 public void concatPDFs(List<InputStream> streamOfPDFFiles, boolean paginate) {
-
-		    Document document = doc;
-		    try {
-		      List<InputStream> pdfs = streamOfPDFFiles;
-		      List<PdfReader> readers = new ArrayList<PdfReader>();
-		      int totalPages = 0;
-		      Iterator<InputStream> iteratorPDFs = pdfs.iterator();
-
-		      // Create Readers for the pdfs.
-		      while (iteratorPDFs.hasNext()) {
-		        InputStream pdf = iteratorPDFs.next();
-		        PdfReader pdfReader = new PdfReader(pdf);
-		        readers.add(pdfReader);
-		        
-		        int n = pdfReader.getNumberOfPages();
-		              
-		        totalPages += n;
+		    PdfDocument document = doc;
+		    try {		      
+		      for (InputStream is : streamOfPDFFiles) {
+		    	  PdfDocument pdfReader = new PdfDocument(new PdfReader(is));
+		    	  for (int i = 0; i < pdfReader.getNumberOfPages(); i ++) {
+		    		  PdfPage currentPage = pdfReader.getPage(i);
+		    		  currentPage.copyTo(document);
+		    	  }
+		    	  pdfReader.close();
 		      }
-		      // Create a writer for the outputstream
-		      PdfWriter writer = this.writer;
-
-		      BaseFont bf = BaseFont.createFont(BaseFont.HELVETICA, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
-		      PdfContentByte cb = writer.getDirectContent(); // Holds the PDF
 		      
-		      PdfImportedPage page;
-		      int currentPageNumber = 0;
-		      int pageOfCurrentReaderPDF = 0;
-		      Iterator<PdfReader> iteratorPDFReader = readers.iterator();
-
-		      // Loop through the PDF files and add to the output.
-		      while (iteratorPDFReader.hasNext()) {
-		        PdfReader pdfReader = iteratorPDFReader.next();
-
-		        // Create a new page in the target for each source page.
-		        while (pageOfCurrentReaderPDF < pdfReader.getNumberOfPages()) {
-		          pageOfCurrentReaderPDF++;
-		          currentPageNumber++;
-		          
-		          //note: page size has to be set before new page created. current page is already initialized
-		          Rectangle sourcePageSize = pdfReader.getPageSize(pageOfCurrentReaderPDF);
-		          document.setPageSize(sourcePageSize);
-		        	
-		          document.newPage();
-		                    
-		          page = writer.getImportedPage(pdfReader, pageOfCurrentReaderPDF);
-		                    
-		          cb.addTemplate(page, 0, 0);
-
-		          // Code for pagination.
-		          if (paginate) {
-		            cb.beginText();
-		            cb.setFontAndSize(bf, 9);
-		            cb.showTextAligned(PdfContentByte.ALIGN_CENTER, "" + currentPageNumber + " of " + totalPages, 520, 5, 0);
-		            cb.endText();
-		          }
-		        }
-		        pageOfCurrentReaderPDF = 0;
-		      }
-		      //outputStream.flush();
-		      //document.close();
-		      //outputStream.close();
 		    } catch (Exception e) {
 		      e.printStackTrace();  
 		    }

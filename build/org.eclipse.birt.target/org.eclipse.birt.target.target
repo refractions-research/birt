@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?pde version="3.8"?>
+<target name="BIRT 2020-12 target platform">
+	<locations>
+		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+			<unit id="org.eclipse.platform.sdk" version="4.18.0.I20201202-1800"/>
+			<!--
+			<unit id="org.eclipse.platform.ide" version="4.8.0.I20180611-0500"/>
+			<unit id="org.eclipse.sdk.ide" version="4.8.0.I20180611-0500"/>
+			<unit id="org.eclipse.emf.base.feature.group" version="2.17.0.v20181231-1705"/>
+			-->
+			
+			<unit id="org.eclipse.emf.ecore.feature.group" version="2.23.0.v20200630-0516"/>
+			<!--
+			<unit id="org.eclipse.emf.feature.group" version="2.24.0.v20200917-1439"/>
+			-->
+			
+			<repository location="http://download.eclipse.org/eclipse/updates/4.18/"/>
+		</location>
+		
+		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+			<unit id="org.eclipse.datatools.connectivity.feature.feature.group" version="1.14.102.201911250848"/>
+			<unit id="org.eclipse.datatools.enablement.feature.feature.group" version="1.14.102.201911250848"/>
+			
+			<repository location="http://download.eclipse.org/releases/2020-12"/>
+			<unit id="org.eclipse.datatools.enablement.oda.designer.feature.feature.group" version="1.14.102.201911250848"/>
+			<unit id="org.eclipse.datatools.enablement.oda.feature.feature.group" version="1.14.102.201911221603"/>
+			<unit id="org.eclipse.datatools.enablement.apache.derby.feature.feature.group" version="1.14.102.201911250848"/>
+			<unit id="org.eclipse.datatools.sqldevtools.sqlbuilder.feature.feature.group" version="1.14.200.202009292210"/>
+		</location>
+		
+		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+		
+			<unit id="org.eclipse.jst.enterprise_ui.feature.feature.group" version="3.20.0.v202011230434"/>
+			<unit id="org.eclipse.wst.jsdt.feature.feature.group" version="2.3.200.v202011230238"/>
+			<unit id="org.eclipse.jst.web_ui.feature.feature.group" version="3.20.0.v202011230434"/>
+		
+			<repository location="http://download.eclipse.org/webtools/downloads/drops/R3.20.0/R-3.20.0-20201201143606/repository/"/>
+		</location>
+		
+		<!--
+		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+			<unit id="org.eclipse.jetty.bundles.f.feature.group" version="9.4.10.201805070144"/>
+			<repository location="http://download.eclipse.org/jetty/updates/jetty-bundles-9.x/9.4.10.v20180503"/>
+		</location>
+		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+			<unit id="org.apache.jasper" version="8.5.35"/>
+			<repository location="http://download.eclipse.org/gemini/updates/web/3.0.4"/>
+		</location>
+		-->
+		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+			<!--
+			<unit id="org.apache.batik.anim" version="1.13.0.v20201124-1831"/>
+			<unit id="org.apache.batik.awt.util" version="1.13.0.v20201124-1831"/>
+			<unit id="org.apache.batik.bridge" version="1.13.0.v20201124-1831"/>
+			<unit id="org.apache.batik.codec" version="1.13.0.v20201124-1831"/>
+			<unit id="org.apache.batik.constants" version="1.13.0.v20201124-1831"/>
+			<unit id="org.apache.batik.css" version="1.13.0.v20201124-1831"/>
+			<unit id="org.apache.batik.dom" version="1.13.0.v20201124-1831"/>
+			<unit id="org.apache.batik.dom.svg" version="1.13.0.v20201124-1831"/>
+			<unit id="org.apache.batik.ext" version="1.9.1.v20180227-1645"/>
+			<unit id="org.apache.batik.gvt" version="1.13.0.v20201124-1831"/>
+			<unit id="org.apache.batik.i18n" version="1.13.0.v20201124-1831"/>
+			<unit id="org.apache.batik.parser" version="1.13.0.v20201124-1831"/>
+			<unit id="org.apache.batik.script" version="1.13.0.v20201124-1831"/>
+			<unit id="org.apache.batik.svggen" version="1.13.0.v20201124-1831"/>
+			<unit id="org.apache.batik.transcoder" version="1.13.0.v20201124-1831"/>
+			<unit id="org.apache.batik.xml" version="1.13.0.v20201124-1831"/>
+			<unit id="org.apache.batik.util" version="1.13.0.v20201124-1831"/>
+			-->
+			<!--
+			<unit id="org.apache.batik.pdf" version="1.13.0.v20201124-1831"/>
+			<unit id="org.apache.batik.swing" version="1.13.0.v20201124-1831"/>
+			<unit id="org.apache.batik.util.gui" version="1.9.1.v20180227-1645"/>
+			-->
+			
+			<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20201130205003/repository/"/>
+			
+		</location>
+		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+			<repository location="https://download.eclipse.org/jetty/updates/jetty-bundles-9.x/9.4.35.v20201120/"/>
+			<unit id="org.eclipse.jetty.bundles.f.feature.group" version="9.4.35.v20201120"/>
+		</location>
+		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+			<repository location="https://download.eclipse.org/tools/orbit/downloads/drops/I20210216201023/repository/"/>
+			<!--<unit id="javax.xml.stream" version="1.0.1.v201004272200"/>-->
+			<unit id="org.slf4j.api" version="1.7.30.v20200204-2150"/>
+			<unit id="ch.qos.logback.slf4j" version="1.2.3.v20200428-2012"/>
+			<unit id="org.apache.batik.anim" version="1.13.0.v20201130-1756"/>
+			<unit id="org.apache.batik.anim.source" version="1.13.0.v20201130-1756"/>
+			<unit id="org.apache.batik.awt.util" version="1.13.0.v20201124-1832"/>
+			<unit id="org.apache.batik.awt.util.source" version="1.13.0.v20201124-1832"/>
+			<unit id="org.apache.batik.bridge" version="1.13.0.v20201124-1840"/>
+			<unit id="org.apache.batik.bridge.source" version="1.13.0.v20201124-1840"/>
+			<unit id="org.apache.batik.codec" version="1.13.0.v20201124-1841"/>
+			<unit id="org.apache.batik.codec.source" version="1.13.0.v20201124-1841"/>
+			<unit id="org.apache.batik.constants" version="1.13.0.v20200622-2037"/>
+			<unit id="org.apache.batik.constants.source" version="1.13.0.v20200622-2037"/>
+			<unit id="org.apache.batik.css" version="1.13.0.v20200622-2037"/>
+			<unit id="org.apache.batik.css.source" version="1.13.0.v20200622-2037"/>
+			<unit id="org.apache.batik.dom" version="1.13.0.v20201124-1839"/>
+			<unit id="org.apache.batik.dom.source" version="1.13.0.v20201124-1839"/>
+			<unit id="org.apache.batik.dom.svg" version="1.13.0.v20201124-1839"/>
+			<unit id="org.apache.batik.dom.svg.source" version="1.13.0.v20201124-1839"/>
+			<unit id="org.apache.batik.ext" version="1.13.0.v20201124-1832"/>
+			<unit id="org.apache.batik.ext.source" version="1.13.0.v20201124-1832"/>
+			<unit id="org.apache.batik.gvt" version="1.13.0.v20201124-1835"/>
+			<unit id="org.apache.batik.gvt.source" version="1.13.0.v20201124-1835"/>
+			<unit id="org.apache.batik.i18n" version="1.13.0.v20200622-2037"/>
+			<unit id="org.apache.batik.i18n.source" version="1.13.0.v20200622-2037"/>
+			<unit id="org.apache.batik.parser" version="1.13.0.v20201124-1833"/>
+			<unit id="org.apache.batik.parser.source" version="1.13.0.v20201124-1833"/>
+			<unit id="org.apache.batik.script" version="1.13.0.v20201124-1840"/>
+			<unit id="org.apache.batik.script.source" version="1.13.0.v20201124-1840"/>
+			<unit id="org.apache.batik.shared.resources" version="1.13.0.v20201124-1831"/>
+			<unit id="org.apache.batik.shared.resources.source" version="1.13.0.v20201124-1831"/>
+			<unit id="org.apache.batik.svggen" version="1.13.0.v20201124-1836"/>
+			<unit id="org.apache.batik.svggen.source" version="1.13.0.v20201124-1836"/>
+			<unit id="org.apache.batik.transcoder" version="1.13.0.v20201124-1841"/>
+			<unit id="org.apache.batik.transcoder.source" version="1.13.0.v20201124-1841"/>
+			<unit id="org.apache.batik.util" version="1.13.0.v20200622-2037"/>
+			<unit id="org.apache.batik.util.source" version="1.13.0.v20200622-2037"/>
+			<unit id="org.apache.batik.xml" version="1.13.0.v20201124-1831"/>
+			<unit id="org.apache.batik.xml.source" version="1.13.0.v20201124-1831"/>
+			<unit id="org.apache.derby" version="10.11.1.1_v201605202053"/>
+			<unit id="org.apache.poi" version="4.1.1.v20200604-1524"/>
+			<unit id="org.apache.poi.ooxml" version="4.1.1.v20200820-1148"/>
+			<unit id="org.apache.poi.ooxml.schemas" version="4.1.1.v20200922-2105"/>
+			<unit id="org.apache.poi.ooxml.source" version="4.1.1.v20200820-1148"/>
+			<unit id="org.apache.poi.source" version="4.1.1.v20200604-1524"/>
+			<unit id="org.eclipse.orbit.mongodb" version="3.2.2.v20181004-1955"/>
+			<unit id="org.apache.xerces" version="2.12.1.v20210115-0812"/>
+		</location>
+		<location includeSource="true" missingManifest="generate" type="Maven">
+			<groupId>com.itextpdf</groupId>
+			<artifactId>kernel</artifactId>
+			<version>7.1.14</version>
+			<type>jar</type>
+		</location>
+		<location includeSource="true" missingManifest="generate" type="Maven">
+			<groupId>com.itextpdf</groupId>
+			<artifactId>io</artifactId>
+			<version>7.1.14</version>
+			<type>jar</type>
+		</location>
+		<location includeSource="true" missingManifest="generate" type="Maven">
+			<groupId>com.itextpdf</groupId>
+			<artifactId>layout</artifactId>
+			<version>7.1.14</version>
+			<type>jar</type>
+		</location>
+		<location includeSource="true" missingManifest="generate" type="Maven">
+			<groupId>com.itextpdf</groupId>
+			<artifactId>font-asian</artifactId>
+			<version>7.1.14</version>
+			<type>jar</type>
+		</location>
+		<location includeSource="true" missingManifest="generate" type="Maven">
+			<groupId>com.itextpdf</groupId>
+			<artifactId>hyph</artifactId>
+			<version>7.1.14</version>
+			<type>jar</type>
+		</location>
+	</locations>
+	
+</target>

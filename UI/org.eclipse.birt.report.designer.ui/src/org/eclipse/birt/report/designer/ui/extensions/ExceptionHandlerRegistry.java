@@ -11,8 +11,6 @@
 
 package org.eclipse.birt.report.designer.ui.extensions;
 
-import org.eclipse.birt.report.designer.ui.extensions.IDesignerExceptionHandler;
-
 /**
  * Holds the customize exception handler.
  */

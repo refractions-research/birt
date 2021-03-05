@@ -11,21 +11,18 @@
 
 package org.eclipse.birt.report.engine.emitter.pdf;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.print.PageFormat;
-import java.awt.print.Paper;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.batik.transcoder.TranscoderInput;
-import org.apache.batik.transcoder.print.PrintTranscoder;
+import javax.naming.OperationNotSupportedException;
+
 import org.eclipse.birt.report.engine.content.IHyperlinkAction;
 import org.eclipse.birt.report.engine.content.IStyle;
 import org.eclipse.birt.report.engine.emitter.EmitterUtil;
@@ -34,38 +31,33 @@ import org.eclipse.birt.report.engine.layout.pdf.font.FontInfo;
 import org.eclipse.birt.report.engine.nLayout.area.style.BackgroundImageInfo;
 import org.eclipse.birt.report.engine.nLayout.area.style.BorderInfo;
 import org.eclipse.birt.report.engine.nLayout.area.style.TextStyle;
-import org.eclipse.birt.report.engine.util.FlashFile;
-import org.eclipse.birt.report.engine.util.SvgFile;
 import org.w3c.dom.css.CSSValue;
 
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Font;
-import com.lowagie.text.Image;
-import com.lowagie.text.Rectangle;
-import com.lowagie.text.pdf.BaseFont;
-import com.lowagie.text.pdf.PdfAction;
-import com.lowagie.text.pdf.PdfAnnotation;
-import com.lowagie.text.pdf.PdfBorderDictionary;
-import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfDestination;
-import com.lowagie.text.pdf.PdfFileSpecification;
-import com.lowagie.text.pdf.PdfTemplate;
-import com.lowagie.text.pdf.PdfTextArray;
-import com.lowagie.text.pdf.PdfWriter;
+import com.itextpdf.io.font.constants.FontStyles;
+import com.itextpdf.io.font.constants.StandardFonts;
+import com.itextpdf.io.image.ImageData;
+import com.itextpdf.io.image.ImageDataFactory;
+import com.itextpdf.kernel.colors.DeviceRgb;
+import com.itextpdf.kernel.font.PdfFont;
+import com.itextpdf.kernel.font.PdfFontFactory;
+import com.itextpdf.kernel.geom.PageSize;
+import com.itextpdf.kernel.geom.Rectangle;
+import com.itextpdf.kernel.pdf.PdfAnnotationBorder;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfPage;
+import com.itextpdf.kernel.pdf.PdfTextArray;
+import com.itextpdf.kernel.pdf.action.PdfAction;
+import com.itextpdf.kernel.pdf.annot.PdfAnnotation;
+import com.itextpdf.kernel.pdf.annot.PdfLinkAnnotation;
+import com.itextpdf.kernel.pdf.annot.PdfSquareAnnotation;
+import com.itextpdf.kernel.pdf.canvas.PdfCanvas;
+import com.itextpdf.kernel.pdf.canvas.PdfCanvasConstants.TextRenderingMode;
+import com.itextpdf.kernel.pdf.navigation.PdfDestination;
+import com.itextpdf.kernel.pdf.navigation.PdfExplicitDestination;
 
 public class PDFPage extends AbstractPage
 {
 
-	/**
-	 * The PDF Writer
-	 */
-	protected PdfWriter writer = null;
-
-	/**
-	 * ContentByte layer for PDF
-	 */
-	protected PdfContentByte contentByte = null;
 
 	protected static Logger logger = Logger
 			.getLogger( PDFPage.class.getName( ) );
@@ -73,55 +65,61 @@ public class PDFPage extends AbstractPage
 	protected float containerHeight;
 
 	protected PDFPageDevice pageDevice;
-	
+	protected PdfPage page;
+	protected PdfCanvas canvas;
 	/**
 	 * font size must greater than minimum font . if not,illegalArgumentException
 	 * will be thrown.
 	 */
 	private static float MIN_FONT_SIZE = 1.0E-4f;
 	
+	//set of rectangles where total page number needs to be written
+	private Set<Rectangle> totalPage = new HashSet<>();
+	
 	private static Pattern PAGE_LINK_PATTERN = Pattern
 			.compile( "^((([a-zA-Z]:))(/(\\w[\\w ]*.*))+\\.(pdf|PDF))+#page=(\\d+)$" );
 
-	public PDFPage( int pageWidth, int pageHeight, Document document,
-			PdfWriter writer, PDFPageDevice pageDevice )
+	public PDFPage( int pageWidth, int pageHeight, PDFPageDevice pageDevice, PdfDocument document)
 	{
 		super( pageWidth, pageHeight );
-		this.writer = writer;
+
 		this.pageDevice = pageDevice;
 		this.containerHeight = this.pageHeight;
-		Rectangle pageSize = new Rectangle( this.pageWidth, this.pageHeight );
-		document.setPageSize( pageSize );
-		if ( !document.isOpen( ) )
-			document.open( );
-		else
-			document.newPage( );
-		this.contentByte = writer.getDirectContent( );
+		
+		document.setDefaultPageSize( new PageSize(this.pageWidth, this.pageHeight) );
+		
+		this.page = document.addNewPage();
+		this.canvas = new PdfCanvas(page);
+		
 	}
 
 	protected void clip( float startX, float startY, float width, float height )
 	{
+
 		startY = transformY( startY, height );
-		contentByte.rectangle( startX, startY, width, height );
-		contentByte.clip( );
-		contentByte.newPath( );
+		canvas.moveTo(startX, startY);
+		canvas.lineTo(startX + width, startY);
+		canvas.lineTo(startX + width, startY + height);
+		canvas.lineTo(startX , startY + height);
+		canvas.clip( );
+		canvas.endPath();
 	}
 
 	protected void restoreState( )
 	{
-		contentByte.restoreState( );
+		canvas.restoreState( );
 	}
 
 	protected void saveState( )
 	{
-		contentByte.saveState( );
+		canvas.saveState( );
 	}
 
 	public void dispose( )
 	{
 	}
 
-	protected void drawBackgroundColor( Color color, float x, float y,
+	protected void drawBackgroundColor( java.awt.Color color, float x, float y,
 			float width, float height )
 	{
 		if ( null == color )
@@ -129,23 +127,33 @@ public class PDFPage extends AbstractPage
 			return;
 		}
 		y = transformY( y, height );
-		contentByte.saveState( );
-		contentByte.setColorFill( color );
-		contentByte.concatCTM( 1, 0, 0, 1, x, y );
-		contentByte.rectangle( 0, 0, width, height );
-		contentByte.fill( );
-		contentByte.restoreState( );
+		
+		canvas.saveState();
+		canvas.setFillColor(new DeviceRgb(color));
+		canvas.rectangle(x, y, width, height);
+		canvas.fill();
+		canvas.restoreState();
+	}
+	
+	//deprecated
+	@Override
+	protected void drawImage(String uri, String extension, float imageX, float imageY, float height, float width,
+			String helpText, Map params) throws Exception {
+		throw new OperationNotSupportedException();
 	}
 
+	@Override
 	protected void drawBackgroundImage( float x, float y, float width,
 			float height, float imageWidth, float imageHeight, int repeat,
 			String imageUrl, byte[] imageData, float offsetX, float offsetY )
 			throws Exception
 	{
-		contentByte.saveState( );
+		
+		canvas.saveState();
+
 		clip( x, y, width, height );
 		
-		PdfTemplate image = null;
+		ImageData image = null;
 		if ( imageUrl != null )
 		{
 			if ( pageDevice.getImageCache( ).containsKey( imageUrl ) )
@@ -155,23 +163,8 @@ public class PDFPage extends AbstractPage
 		}
 		if ( image == null )
 		{
-			Image img = Image.getInstance( imageData );
-			if ( imageHeight == 0 || imageWidth == 0 )
-			{
-				int resolutionX = img.getDpiX( );
-				int resolutionY = img.getDpiY( );
-				if ( 0 == resolutionX || 0 == resolutionY )
-				{
-					resolutionX = 96;
-					resolutionY = 96;
-				}
-				imageWidth = img.getPlainWidth( ) / resolutionX * 72;
-				imageHeight = img.getPlainHeight( ) / resolutionY * 72;
-			}
-
-			image = contentByte.createTemplate( imageWidth, imageHeight );
-			image.addImage( img, imageWidth, 0, 0, imageHeight, 0, 0 );
-
+			
+			image = ImageDataFactory.create(imageData);
 			if ( imageUrl != null && image != null )
 			{
 				pageDevice.getImageCache( ).put( imageUrl, image );
@@ -202,81 +195,56 @@ public class PDFPage extends AbstractPage
 			float startX = originalX;
 			do
 			{
-				drawImage( image, x + startX, y + startY, imageWidth,
-						imageHeight );
+				drawImage( image, x + startX, y + startY, imageWidth, imageHeight );
 				startX += imageWidth;
 			} while ( startX < width && xExtended );
 			startY += imageHeight;
 		} while ( startY < height && yExtended );
-		contentByte.restoreState( );
+		canvas.restoreState( );
 	}
 
-	protected void drawImage( String imageId, byte[] imageData,
+	protected void drawImage( String imageId, byte[] iData,
 			String extension, float imageX, float imageY, float height,
 			float width, String helpText, Map params ) throws Exception
 	{
-		// Flash
-		if ( FlashFile.isFlash( null, null, extension ) )
-		{
-			embedFlash( null, imageData, imageX, imageY, height, width,
-					helpText, params );
-			return;
-		}
-
 		// Cached Image
-		PdfTemplate template = null;
+		ImageData imageData = null;
 		if ( imageId != null )
 		{
 			if ( pageDevice.getImageCache( ).containsKey( imageId ) )
 			{
-				template = pageDevice.getImageCache( ).get( imageId );
+				imageData = pageDevice.getImageCache( ).get( imageId );
 			}
-			if ( template != null )
+			if ( imageData != null )
 			{
-				drawImage( template, imageX, imageY, height, width, helpText );
+				drawImage( imageData, imageX, imageY, height, width, helpText );
 				return;
 			}
 		}
 
 		// Not cached yet
-		if ( SvgFile.isSvg( null, null, extension ) )
-		{
-			template = generateTemplateFromSVG( null, imageData, imageX,
-					imageY, height, width, helpText );
-		}
-		else
-		{
+//		if ( SvgFile.isSvg( null, null, extension ) )
+//		{
+//			//TODO:
+//			imageData = generateTemplateFromSVG( null, iData, imageX,
+//					imageY, height, width, helpText );
+//		}
+//		else
+//		{
 			// PNG/JPG/BMP... images:
-			Image image = Image.getInstance( imageData );
-			if ( imageId == null )
-			{
-				// image without imageId, not able to cache.
-				drawImage( image, imageX, imageY, height, width, helpText );
-				return;
-			}
-			template = contentByte.createTemplate( width, height );
-			template.addImage( image, width, 0, 0, height, 0, 0 );
-		}
+		imageData = ImageDataFactory.create( iData );
+//		}
 		// Cache the image
-		if ( imageId != null && template != null )
+		if ( imageId != null && imageData != null )
 		{
-			pageDevice.getImageCache( ).put( imageId, template );
+			pageDevice.getImageCache( ).put( imageId, imageData );
 		}
-		if ( template != null )
+		if ( imageData != null )
 		{
-			drawImage( template, imageX, imageY, height, width, helpText );
+			drawImage( imageData, imageX, imageY, height, width, helpText );
 		}
 	}
 
-	/**
-	 * @deprecated
-	 */
-	protected void drawImage( String uri, String extension, float imageX,
-			float imageY, float height, float width, String helpText, Map params )
-			throws Exception
-	{
-		return;
-	}
 
 	/**
 	 * Draws a line with the line-style specified in advance from the start
@@ -300,7 +268,7 @@ public class PDFPage extends AbstractPage
 	 *            the style of the line.
 	 */
 	protected void drawLine( float startX, float startY, float endX,
-			float endY, float width, Color color, int lineStyle )
+			float endY, float width, java.awt.Color color, int lineStyle )
 	{
 		// if the border does NOT have color or the line width of the border is
 		// zero or the lineStyle is "none", just return.
@@ -309,20 +277,20 @@ public class PDFPage extends AbstractPage
 		{
 			return;
 		}
-		contentByte.saveState( );
+		canvas.saveState( );
 		if ( BorderInfo.BORDER_STYLE_SOLID == lineStyle ) //$NON-NLS-1$
 		{
-			drawRawLine( startX, startY, endX, endY, width, color, contentByte );
+			drawRawLine( startX, startY, endX, endY, width, color, canvas );
 		}
 		else if ( BorderInfo.BORDER_STYLE_DASHED == lineStyle ) //$NON-NLS-1$
 		{
-			contentByte.setLineDash( 3 * width, 2 * width, 0f );
-			drawRawLine( startX, startY, endX, endY, width, color, contentByte );
+			canvas.setLineDash( 3 * width, 2 * width, 0f );
+			drawRawLine( startX, startY, endX, endY, width, color, canvas );
 		}
 		else if ( BorderInfo.BORDER_STYLE_DOTTED == lineStyle ) //$NON-NLS-1$
 		{
-			contentByte.setLineDash( width, width, 0f );
-			drawRawLine( startX, startY, endX, endY, width, color, contentByte );
+			canvas.setLineDash( width, width, 0f );
+			drawRawLine( startX, startY, endX, endY, width, color, canvas );
 		}
 		else if ( BorderInfo.BORDER_STYLE_DOUBLE == lineStyle ) //$NON-NLS-1$
 		{
@@ -333,9 +301,9 @@ public class PDFPage extends AbstractPage
 		// We look it as the default line style -- 'solid'
 		else
 		{
-			drawRawLine( startX, startY, endX, endY, width, color, contentByte );
+			drawRawLine( startX, startY, endX, endY, width, color, canvas );
 		}
-		contentByte.restoreState( );
+		canvas.restoreState( );
 	}
 
 	protected void drawText( String text, float textX, float textY,
@@ -352,7 +320,7 @@ public class PDFPage extends AbstractPage
 		{
 			FontInfo fontInfo = textStyle.getFontInfo( );
 			float lineWidth = fontInfo.getLineWidth( );
-			Color color = textStyle.getColor( );
+			java.awt.Color color = textStyle.getColor( );
 			drawDecorationLine( textX, textY, width, lineWidth,
 					convertToPoint( fontInfo.getUnderlinePosition( ) ), color );
 		}
@@ -360,42 +328,55 @@ public class PDFPage extends AbstractPage
 
 	private void drawText( String text, float textX, float textY, float width,
 			float height, FontInfo fontInfo, float characterSpacing,
-			float wordSpacing, Color color, boolean linethrough,
+			float wordSpacing, java.awt.Color color, boolean linethrough,
 			boolean overline, boolean underline, CSSValue align )
 	{
 		drawText( text, textX, textY, fontInfo, characterSpacing, wordSpacing,
 				color, align );
 	}
 
-	public void drawTotalPage( String text, int textX, int textY, int width,
-			int height, TextStyle textInfo, float scale )
+	public void drawTotalPage( String text, TextStyle textInfo )
 	{
-		PdfTemplate template = pageDevice.getPDFTemplate( scale );
-		if ( template != null )
-		{
-			PdfContentByte tempCB = this.contentByte;
-			this.containerHeight = template.getHeight( );
-			this.contentByte = template;
-			drawText( text, textX, textY, width, height, textInfo );
-			this.contentByte = tempCB;
-			this.containerHeight = pageHeight;
+		for (Rectangle r : totalPage) {
+			drawText(text, (int)r.getX(), (int)r.getY(), (int)r.getWidth(), (int)r.getHeight(), textInfo);
 		}
 	}
 
-	public void createBookmark( String bookmark, int x, int y, int width,
+	public PdfDestination createBookmark( String bookmark, int x, int y, int width,
 			int height )
 	{
-		createBookmark( bookmark, convertToPoint( x ), convertToPoint( y ),
+		
+		return createBookmark( bookmark, convertToPoint( x ), convertToPoint( y ),
 				convertToPoint( width ), convertToPoint( height ) );
 	}
 
-	private void createBookmark( String bookmark, float x, float y,
+	private PdfDestination createBookmark( String bookmark, float x, float y,
 			float width, float height )
 	{
-		contentByte.localDestination( bookmark, new PdfDestination(
-				PdfDestination.XYZ, -1, transformY( y ), 0 ) );
+		PdfDestination add = PdfExplicitDestination.createXYZ(page, x, transformY(y), 1.0f);
+		page.getDocument().getOutlines(false).addDestination(add);
+		return add;
 	}
 
+	public void createHyperlink( String hyperlink, PdfDestination bookmark,
+			String targetWindow, int type, int x, int y, int width, int height )
+	{
+		PdfAction action = PdfAction.createGoTo(bookmark);
+		
+		float x1 = convertToPoint(x);
+		float y1 = convertToPoint(y);
+		float width1 = convertToPoint(width);
+		float height1 = convertToPoint(height);
+		
+		y1 = transformY( y1, height1 );
+		
+		PdfLinkAnnotation annotation = new PdfLinkAnnotation(new Rectangle(x1,y1,width1,height1));
+		annotation.setAction(action);
+		annotation.setBorder(new PdfAnnotationBorder(0,0,0));		
+		page.addAnnotation(annotation);
+	}
+
+	
 	public void createHyperlink( String hyperlink, String bookmark,
 			String targetWindow, int type, int x, int y, int width, int height )
 	{
@@ -408,36 +389,20 @@ public class PDFPage extends AbstractPage
 			String targetWindow, int type, float x, float y, float width,
 			float height )
 	{
+		PdfAction action = createPdfAction(hyperlink, bookmark, targetWindow, type);
+		
 		y = transformY( y, height );
-		writer.addAnnotation( new PdfAnnotation( writer, x, y, x + width, y
-				+ height, createPdfAction( hyperlink, bookmark, targetWindow,
-				type ) ) );
+		
+		PdfLinkAnnotation annotation = new PdfLinkAnnotation(new Rectangle(x,y,width,height));
+		annotation.setAction(action);
+		annotation.setBorder(new PdfAnnotationBorder(0,0,0));		
+		page.addAnnotation(annotation);
 	}
 
-	public void createTotalPageTemplate( int x, int y, int width, int height,
-			float scale )
+	public void createTotalPageTemplate( int x, int y, int width, int height)
 	{
-		createTotalPageTemplate( convertToPoint( x ), convertToPoint( y ),
-				convertToPoint( width ), convertToPoint( height ), scale );
-	}
-
-	private void createTotalPageTemplate( float x, float y, float width,
-			float height, float scale )
-	{
-		PdfTemplate template = null;
-		if ( pageDevice.hasTemplate( scale ) )
-		{
-			template = pageDevice.getPDFTemplate( scale );
-		}
-		else
-		{
-			template = contentByte.createTemplate( width, height );
-			pageDevice.setPDFTemplate( scale, template );
-		}
-		y = transformY( y, height );
-		contentByte.saveState( );
-		contentByte.addTemplate( template, x, y );
-		contentByte.restoreState( );
+		//cache area for writing later
+		totalPage.add(new Rectangle(x,y,width,height));
 	}
 
 	/**
@@ -462,88 +427,107 @@ public class PDFPage extends AbstractPage
 	 *            the given pdf layer
 	 */
 	private void drawRawLine( float startX, float startY, float endX,
-			float endY, float width, Color color, PdfContentByte contentByte )
+			float endY, float width, java.awt.Color color, PdfCanvas canvas )
 	{
 		startY = transformY( startY );
 		endY = transformY( endY );
-		contentByte.concatCTM( 1, 0, 0, 1, startX, startY );
+		canvas.moveTo( startX, startY );
+		canvas.lineTo( endX, endY );
 
-		contentByte.moveTo( 0, 0 );
-		contentByte.lineTo( endX - startX, endY - startY );
-
-		contentByte.setLineWidth( width );
-		contentByte.setColorStroke( color );
-		contentByte.stroke( );
+		canvas.setLineWidth( width );
+		canvas.setStrokeColor( new DeviceRgb(color) );
+		canvas.stroke( );
 	}
 
 	private void drawText( String text, float textX, float textY,
 			FontInfo fontInfo, float characterSpacing, float wordSpacing,
-			Color color, CSSValue align )
+			java.awt.Color color, CSSValue align )
 	{
-		contentByte.saveState( );
+		canvas.saveState( );
 		// start drawing the text content
-		contentByte.beginText( );
-		if ( null != color && !Color.BLACK.equals( color ) )
+		canvas.beginText( );
+		if ( null != color && !java.awt.Color.BLACK.equals( color ) )
 		{
-			contentByte.setColorFill( color );
-			contentByte.setColorStroke( color );
+			canvas.setFillColor( new DeviceRgb(color) );
+			canvas.setStrokeColor( new DeviceRgb(color) );
 		}
-		BaseFont font = getBaseFont( fontInfo );
-		float fontSize = fontInfo.getFontSize( );
+		PdfFont font = null;
 		try
 		{
-			contentByte.setFontAndSize( font, fontSize );
+			font = PdfFontFactory.createRegisteredFont( fontInfo.getFontName() );
+		}catch (Exception ex) {
+			logger.log(Level.WARNING, ex.getMessage());
+			try {
+				font = PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN);
+			} catch (IOException e) {
+				logger.log(Level.SEVERE, ex.getMessage());
+				return;
+			}
+		}
+		
+		float fontSize = fontInfo.getFontSize( );
+		
+		try
+		{
+			canvas.setFontAndSize( font, fontSize );
 		}
 		catch ( IllegalArgumentException e )
 		{
 			logger.log( Level.WARNING, e.getMessage( ) );
 			// close to zero , increase by one MIN_FONT_SIZE step
-			contentByte.setFontAndSize( font, MIN_FONT_SIZE * 2 );
+			canvas.setFontAndSize( font, MIN_FONT_SIZE * 2 );
 		}
 		if ( characterSpacing != 0 )
 		{
-			contentByte.setCharacterSpacing( characterSpacing );
+			canvas.setCharacterSpacing( characterSpacing );
 		}
 		if ( wordSpacing != 0 )
 		{
-			contentByte.setWordSpacing( wordSpacing );
+			canvas.setWordSpacing( wordSpacing );
 		}
-		setTextMatrix( contentByte, fontInfo, textX,
+		
+		
+		setTextMatrix( canvas, fontInfo, textX,
 				transformY( textY, 0, containerHeight ) );
-		if ( ( font.getFontType( ) == BaseFont.FONT_TYPE_TTUNI )
+		
+		if ( (font.getFontProgram().getFontIdentification().getTtfVersion()  != null)
+//		if ( ( font.getFontType( ) == BaseFont.FONT_TYPE_TTUNI )
 				&& IStyle.JUSTIFY_VALUE.equals( align ) && wordSpacing > 0 )
 		{
 			int idx = text.indexOf( ' ' );
 			if ( idx >= 0 )
 			{
 				float spaceCorrection = -wordSpacing * 1000 / fontSize;
-				PdfTextArray textArray = new PdfTextArray( text.substring( 0,
-						idx ) );
+				
+				PdfTextArray textArray = new PdfTextArray();
+				textArray.add( text.substring( 0, idx ), font );
+				
 				int lastIdx = idx;
 				while ( ( idx = text.indexOf( ' ', lastIdx + 1 ) ) >= 0 )
 				{
 					textArray.add( spaceCorrection );
-					textArray.add( text.substring( lastIdx, idx ) );
+					textArray.add( text.substring( lastIdx, idx ), font );
 					lastIdx = idx;
 				}
 				textArray.add( spaceCorrection );
-				textArray.add( text.substring( lastIdx ) );
-				contentByte.showText( textArray );
+				textArray.add( text.substring( lastIdx ), font );
+				canvas.showText( textArray );
 			}
 			else
 			{
-				contentByte.showText( text );
+				canvas.showText( text );
 			}
 		}
 		else
 		{
-			contentByte.showText( text );
+			canvas.showText( text );
 		}
-		contentByte.endText( );
-		contentByte.restoreState( );
+		
+		canvas.endText( );
+		canvas.restoreState( );
 	}
 
-	protected BaseFont getBaseFont( FontInfo fontInfo )
+	protected PdfFont getBaseFont( FontInfo fontInfo )
 	{
 		return fontInfo.getBaseFont( );
 	}
@@ -580,11 +564,11 @@ public class PDFPage extends AbstractPage
 				{
 					String fileName = matcher.group( 1 );
 					String pageNumber = matcher.group( matcher.groupCount( ) );
-					return new PdfAction( fileName,
+					PdfAction.createGoToR(fileName,
 							Integer.valueOf( pageNumber ) );
 				}
 			}
-			return new PdfAction( hyperlink );
+			return PdfAction.createURI( hyperlink );
 		}
 		else
 
@@ -592,19 +576,18 @@ public class PDFPage extends AbstractPage
 		{
 			if ( type == IHyperlinkAction.ACTION_BOOKMARK )
 			{
-				return PdfAction.gotoLocalPage( bookmark, false );
+				return PdfAction.createGoTo( bookmark );
 			}
 			else
 			{
-				return PdfAction.gotoRemotePage( hyperlink, bookmark, false,
-						false );
+				return PdfAction.createGoToR(hyperlink, bookmark, false);
 			}
 		}
 	}
 
-	private void setTextMatrix( PdfContentByte cb, FontInfo fi, float x, float y )
+	private void setTextMatrix( PdfCanvas cb, FontInfo fi, float x, float y )
 	{
-		cb.concatCTM( 1, 0, 0, 1, x, y );
+		cb.concatMatrix( 1, 0, 0, 1, x, y );
 		if ( !fi.getSimulation( ) )
 		{
 			cb.setTextMatrix( 0, 0 );
@@ -612,17 +595,17 @@ public class PDFPage extends AbstractPage
 		}
 		switch ( fi.getFontStyle( ) )
 		{
-			case Font.ITALIC :
+			case FontStyles.ITALIC :
 			{
 				simulateItalic( cb );
 				break;
 			}
-			case Font.BOLD :
+			case FontStyles.BOLD :
 			{
 				simulateBold( cb, fi.getFontWeight( ) );
 				break;
 			}
-			case Font.BOLDITALIC :
+			case FontStyles.BOLDITALIC :
 			{
 				simulateBold( cb, fi.getFontWeight( ) );
 				simulateItalic( cb );
@@ -641,9 +624,9 @@ public class PDFPage extends AbstractPage
 		fontWeightLineWidthMap.put( 900, 0.5f );
 	};
 
-	private void simulateBold( PdfContentByte cb, int fontWeight )
+	private void simulateBold( PdfCanvas cb, int fontWeight )
 	{
-		cb.setTextRenderingMode( PdfContentByte.TEXT_RENDER_MODE_FILL_STROKE );
+		cb.setTextRenderingMode( TextRenderingMode.FILL_STROKE );
 		if ( fontWeightLineWidthMap.containsKey( fontWeight ) )
 		{
 			cb.setLineWidth( fontWeightLineWidthMap.get( fontWeight ) );
@@ -655,7 +638,7 @@ public class PDFPage extends AbstractPage
 		cb.setTextMatrix( 0, 0 );
 	}
 
-	private void simulateItalic( PdfContentByte cb )
+	private void simulateItalic( PdfCanvas cb )
 	{
 		float beta = EmitterUtil.ITALIC_HORIZONTAL_COEFFICIENT;
 		cb.setTextMatrix( 1, 0, beta, 1, 0, 0 );
@@ -671,105 +654,92 @@ public class PDFPage extends AbstractPage
 			String helpText )
 	{
 		Rectangle rectangle = new Rectangle( x, y, x + width, y + height );
-		PdfAnnotation annotation = PdfAnnotation.createSquareCircle( writer,
-				rectangle, helpText, true );
-		PdfBorderDictionary borderStyle = new PdfBorderDictionary( 0,
-				PdfBorderDictionary.STYLE_SOLID, null );
-		annotation.setBorderStyle( borderStyle );
+		
+		
+		PdfAnnotation annotation = new PdfSquareAnnotation(rectangle);
+		annotation.setContents(helpText);
+//				
+//		PdfBorderDictionary borderStyle = new PdfBorderDictionary( 0,
+//				PdfBorderDictionary.STYLE_SOLID, null );
+//		annotation.setBorderStyle( borderStyle );
+		
 		annotation.setFlags( 288 );
-		writer.addAnnotation( annotation );
+		
+		page.addAnnotation(annotation);
 	}
 
-	protected void drawImage( PdfTemplate image, float imageX, float imageY,
-			float height, float width, String helpText )
-			throws DocumentException
-	{
-		imageY = transformY( imageY, height );
-		contentByte.saveState( );
-		contentByte.concatCTM( 1, 0, 0, 1, imageX, imageY );
-		float w = image.getWidth( );
-		float h = image.getHeight( );
-		contentByte.addTemplate( image, width / w, 0f / w, 0f / h, height / h,
-				0f, 0f );
-		if ( helpText != null )
-		{
-			showHelpText( imageX, imageY, width, height, helpText );
-		}
-		contentByte.restoreState( );
-	}
-	
-	private void drawImage( PdfTemplate image, float imageX, float imageY,
+//	protected void drawImage( PdfCanvas image, float imageX, float imageY,
+//			float height, float width, String helpText )
+//			throws DocumentException
+//	{
+//		imageY = transformY( imageY, height );
+//		contentByte.saveState( );
+//		contentByte.concatCTM( 1, 0, 0, 1, imageX, imageY );
+//		float w = image.getWidth( );
+//		float h = image.getHeight( );
+//		contentByte.addTemplate( image, width / w, 0f / w, 0f / h, height / h,
+//				0f, 0f );
+//		if ( helpText != null )
+//		{
+//			showHelpText( imageX, imageY, width, height, helpText );
+//		}
+//		contentByte.restoreState( );
+//	}
+//	
+	private void drawImage( ImageData imageData, float imageX, float imageY,
 			float width, float height )
-			throws DocumentException
 	{
-		drawImage( image, imageX, imageY, height, width, null );
+		drawImage( imageData, imageX, imageY, height, width, null );
 	}
 
-	protected void drawImage( Image image, float imageX, float imageY,
+	protected void drawImage( ImageData imageData, float imageX, float imageY,
 			float height, float width, String helpText )
-			throws DocumentException
 	{
 		imageY = transformY( imageY, height );
-		contentByte.saveState( );
-		contentByte.concatCTM( 1, 0, 0, 1, imageX, imageY );
-		contentByte.addImage( image, width, 0f, 0f, height, 0f, 0f );
+		canvas.saveState( );
+		canvas.concatMatrix( 1, 0, 0, 1, imageX, imageY );
+		
+		canvas.addImageFittedIntoRectangle(imageData, new Rectangle(0,0,width,height), false);
+		
 		if ( helpText != null )
 		{
 			showHelpText( imageX, imageY, width, height, helpText );
 		}
-		contentByte.restoreState( );
+		canvas.restoreState( );
 	}
 
-	protected void embedFlash( String flashPath, byte[] flashData, float x,
-			float y, float height, float width, String helpText, Map params )
-			throws IOException
-	{
-		y = transformY( y, height );
-		contentByte.saveState( );
-		PdfFileSpecification fs = PdfFileSpecification.fileEmbedded( writer,
-				flashPath, helpText, flashData );
-		PdfAnnotation annot = PdfAnnotation.createScreen( writer,
-				new Rectangle( x, y, x + width, y + height ), helpText, fs,
-				"application/x-shockwave-flash", true );
-		writer.addAnnotation( annot );
-		if ( helpText != null )
-		{
-			showHelpText( x, y, width, height, helpText );
-		}
-		contentByte.restoreState( );
-	}
 
-	protected PdfTemplate generateTemplateFromSVG( String svgPath,
-			byte[] svgData, float x, float y, float height, float width,
-			String helpText ) throws Exception
-	{
-		return transSVG( null, svgData, x, y, height, width, helpText );
-	}
+//	protected ImageData generateTemplateFromSVG( String svgPath,
+//			byte[] svgData, float x, float y, float height, float width,
+//			String helpText ) throws Exception
+//	{
+//		return transSVG( null, svgData, x, y, height, width, helpText );
+//	}
+//
+//	protected ImageData transSVG( String svgPath, byte[] svgData, float x,
+//			float y, float height, float width, String helpText )
+//			throws IOException
+//	{
+//		ByteArrayOutputStream ostream = new ByteArrayOutputStream( );
+//		TranscoderOutput output = new TranscoderOutput( ostream );
+//		
+//		PrintTranscoder transcoder = new PrintTranscoder( );
+//		if ( null != svgData && svgData.length > 0 )
+//		{
+//			transcoder.transcode( new TranscoderInput(
+//					new ByteArrayInputStream( svgData ) ), output );
+//		}
+//		else if ( null != svgPath )
+//		{
+//			transcoder.transcode( new TranscoderInput( svgPath ), output );
+//		}
+//		
+//		ostream.flush();
+//		return ImageDataFactory.create(ostream.toByteArray());
+//
+//	}
 
-	protected PdfTemplate transSVG( String svgPath, byte[] svgData, float x,
-			float y, float height, float width, String helpText )
-			throws IOException, DocumentException
-	{
-		PdfTemplate template = contentByte.createTemplate( width, height );
-		Graphics2D g2D = template.createGraphics( width, height );
+	
 
-		PrintTranscoder transcoder = new PrintTranscoder( );
-		if ( null != svgData && svgData.length > 0 )
-		{
-			transcoder.transcode( new TranscoderInput(
-					new ByteArrayInputStream( svgData ) ), null );
-		}
-		else if ( null != svgPath )
-		{
-			transcoder.transcode( new TranscoderInput( svgPath ), null );
-		}
-		PageFormat pg = new PageFormat( );
-		Paper p = new Paper( );
-		p.setSize( width, height );
-		p.setImageableArea( 0, 0, width, height );
-		pg.setPaper( p );
-		transcoder.print( g2D, pg, 0 );
-		g2D.dispose( );
-		return template;
-	}
+
 }

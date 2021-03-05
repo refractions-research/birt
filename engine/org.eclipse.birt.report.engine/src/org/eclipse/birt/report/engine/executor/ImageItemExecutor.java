@@ -28,6 +28,8 @@ import org.eclipse.birt.report.engine.layout.pdf.util.PropertyUtil;
 import org.eclipse.birt.report.engine.util.FileUtil;
 import org.eclipse.birt.report.model.api.elements.structures.EmbeddedImage;
 
+import com.itextpdf.io.image.ImageData;
+
 /**
  * <code>ImageItemExecutor</code> is a concrete subclass of
  * <code>StyledItemExecutor</code> that manipulate different types of images.
@@ -137,7 +139,7 @@ public class ImageItemExecutor extends QueryItemExecutor
 		if ( imageDesign.isProportionalScale( )
 				&& width != null && height != null )
 		{
-			com.lowagie.text.Image imageData = EmitterUtil.getImage( imageContent );
+			ImageData imageData = EmitterUtil.getImage( imageContent );
 
 			if ( imageData != null )
 			{

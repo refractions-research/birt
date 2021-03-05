@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.eclipse.birt</groupId>
 		<artifactId>org.eclipse.birt-parent</artifactId>
-		<version>4.11.0-SNAPSHOT</version>
+		<version>4.18.0-SNAPSHOT</version>
 		<relativePath>../../</relativePath>
 	</parent>
 	<artifactId>org.eclipse.birt.report.viewer</artifactId>
@@ -37,6 +37,7 @@
         </profile>
 	</profiles>
 	<build>
+		<pluginManagement>
 		<plugins>
 			<plugin>
 				<groupId>org.eclipse.jetty</groupId>
@@ -65,7 +66,8 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-antrun-plugin</artifactId>
-				<version>1.8</version>
+				<version>${antrun.version}</version>
+
 				<executions>
 					<execution>
 						<id>jar-pre-compile-jsp</id>
@@ -100,5 +102,6 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		</pluginManagement>
 	</build>
 </project>

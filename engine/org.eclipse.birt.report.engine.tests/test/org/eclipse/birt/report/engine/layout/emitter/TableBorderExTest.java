@@ -6,16 +6,17 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Iterator;
 
-import junit.framework.TestCase;
-
 import org.eclipse.birt.report.engine.layout.emitter.TableBorderEx.Border;
 import org.eclipse.birt.report.engine.layout.emitter.TableBorderEx.BorderSegment;
 
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Rectangle;
-import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfWriter;
+import com.itextpdf.kernel.colors.DeviceRgb;
+import com.itextpdf.kernel.geom.PageSize;
+import com.itextpdf.kernel.geom.Rectangle;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.kernel.pdf.canvas.PdfCanvas;
+
+import junit.framework.TestCase;
 
 //class CellArea
 //{
@@ -80,7 +81,7 @@ public class TableBorderExTest extends TestCase
 	private CellArea[] cells = new CellArea[9];
 	int tableX = 10;
 	int tableY = 10;
-	PdfContentByte cb;
+	PdfDocument document;
 	int pageHeight = 1000;
 	int pageWidth = 1000;
 
@@ -126,23 +127,18 @@ public class TableBorderExTest extends TestCase
 		cells[8].defineBorder( BorderInfo.BOTTOM_BORDER, Color.blue );
 		cells[8].defineBorder( BorderInfo.RIGHT_BORDER, 6 );
 		cells[8].defineBorder( BorderInfo.RIGHT_BORDER, Color.orange );
-		Document document = new Document( );
-		try
+		
+		try(PdfWriter writer = new PdfWriter(new FileOutputStream( "TableBorderTestEx.pdf" ) ))
 		{
 			// step 2: creation of the writer
-			PdfWriter writer = PdfWriter.getInstance( document,
-					new FileOutputStream( "TableBorderTestEx.pdf" ) );
+			document = new PdfDocument(writer);
+			
 			// step 3: we open the document
 			Rectangle pageSize = new Rectangle( pageWidth, pageHeight );
-			document.setPageSize( pageSize );
-			document.open( );
+			document.setDefaultPageSize( new PageSize(pageSize) );
+			
 			// step 4: we grab the ContentByte and do some stuff with it
-			cb = writer.getDirectContent( );
 			testBorderDraw( );
-		}
-		catch ( DocumentException de )
-		{
-			System.err.println( de.getMessage( ) );
 		}
 		catch ( IOException ioe )
 		{
@@ -358,13 +354,14 @@ public class TableBorderExTest extends TestCase
 	private void drawLine( float startX, float startY, float endX, float endY,
 			int style, float width, Color color )
 	{
+		PdfCanvas c = new PdfCanvas(document.addNewPage());
 		startY = transformY( startY );
 		endY = transformY( endY );
-		cb.moveTo( startX, startY );
-		cb.setLineWidth( width );
-		cb.lineTo( endX, endY );
-		cb.setColorStroke( color );
-		cb.stroke( );
+		c.moveTo( startX, startY );
+		c.setLineWidth( width );
+		c.lineTo( endX, endY );
+		c.setStrokeColor( new DeviceRgb(color) );
+		c.stroke( );
 	}
 
 	private float transformY( float y )

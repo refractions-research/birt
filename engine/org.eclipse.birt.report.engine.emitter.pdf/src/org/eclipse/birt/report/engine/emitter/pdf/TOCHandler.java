@@ -19,8 +19,10 @@ import org.eclipse.birt.report.engine.api.TOCNode;
 import org.eclipse.birt.report.engine.api.script.instance.IScriptStyle;
 import org.eclipse.birt.report.engine.layout.pdf.util.PropertyUtil;
 
-import com.lowagie.text.pdf.PdfAction;
-import com.lowagie.text.pdf.PdfOutline;
+import com.itextpdf.kernel.colors.DeviceRgb;
+import com.itextpdf.kernel.pdf.PdfOutline;
+import com.itextpdf.kernel.pdf.action.PdfAction;
+
 
 public class TOCHandler
 {
@@ -99,8 +101,9 @@ public class TOCHandler
 				createTOC( node, outline, bookmarks );
 				continue;
 			}
-			PdfOutline outline = new PdfOutline( pol, PdfAction.gotoLocalPage(
-					node.getBookmark( ), false ), node.getDisplayString( ) );
+			
+			PdfOutline outline = pol.addOutline(node.getDisplayString());
+			outline.addAction(PdfAction.createGoTo(node.getBookmark()));
 			countOutlineSize( node.getBookmark( ).length( ) );
 			IScriptStyle style = node.getTOCStyle( );
 			String color = style.getColor( );
@@ -111,7 +114,7 @@ public class TOCHandler
 			Color awtColor = PropertyUtil.getColor( color );
 			if ( awtColor != null )
 			{
-				outline.setColor( awtColor );
+				outline.setColor( new DeviceRgb(awtColor) );
 			}
 			String fontStyle = style.getFontStyle( );
 			String fontWeight = style.getFontWeight( );

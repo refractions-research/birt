@@ -37,7 +37,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.w3c.dom.css.CSSValue;
 
-import com.lowagie.text.Font;
+import com.itextpdf.io.font.constants.FontStyles;
 
 public class PropertyUtil
 {
@@ -263,12 +263,12 @@ public class PropertyUtil
 
 	public static int getFontStyle( String fontStyle, String fontWeight )
 	{
-		int styleValue = Font.NORMAL;
+		int styleValue = FontStyles.NORMAL;
 
 		if ( CSSConstants.CSS_OBLIQUE_VALUE.equals( fontStyle )
 				|| CSSConstants.CSS_ITALIC_VALUE.equals( fontStyle ) )
 		{
-			styleValue |= Font.ITALIC;
+			styleValue |= FontStyles.ITALIC;
 		}
 
 		if ( CSSConstants.CSS_BOLD_VALUE.equals( fontWeight )
@@ -278,7 +278,7 @@ public class PropertyUtil
 				|| CSSConstants.CSS_800_VALUE.equals( fontWeight )
 				|| CSSConstants.CSS_900_VALUE.equals( fontWeight ) )
 		{
-			styleValue |= Font.BOLD;
+			styleValue |= FontStyles.BOLD;
 		}
 		return styleValue;
 	}
