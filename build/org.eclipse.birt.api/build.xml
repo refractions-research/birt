@@ -118,7 +118,7 @@
   <target name="build-api-manifest">
     <property name="MANIFEST_TEMPLATE" location="./MANIFEST.MF.template"/>
     <property name="MANIFEST_MF" location="./target/manifest.mf"/>
-    <script language="javascript"><![CDATA[
+    <script language="javascript" manager="javax" classpath="C:/Java/jdk1.8.0_201/jre/lib/ext/lib/ext/nashort.jar"><![CDATA[
         //for all jars in ./lib folder, get all packages
         //sort the package and append to manifest.mf
         

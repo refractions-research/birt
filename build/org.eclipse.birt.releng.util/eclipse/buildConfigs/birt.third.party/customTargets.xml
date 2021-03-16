@@ -82,14 +82,15 @@
 	<!-- ===================================================================== -->
 	<!-- Steps to do before generating build scripts -->
 	<!-- ===================================================================== -->
-	<target name="preGenerate">
+	<!--<target name="preGenerate"> -->
 		<!-- Copy itext jar-->
-		<copy todir="${buildDirectory}/plugins/com.lowagie.itext/lib">
-			<fileset dir="${p4.home}/iText">
-				<include name="*.jar"/>
-			</fileset>
-		</copy>
-	</target>
+	<!-- <copy todir="${buildDirectory}/plugins/com.lowagie.itext/lib"> -->
+	<!-- <fileset dir="${p4.home}/iText"> -->
+	<!-- <include name="*.jar"/> -->
+	<!-- </fileset> -->
+	<!-- 	</copy> -->
+	<!-- </target> -->
+	
 
 	<!-- ===================================================================== -->
 	<!-- Steps to do after generating the build scripts -->
@@ -123,12 +124,14 @@
 			<include name="org.w3c.sac/about.properties" />
 			<include name="org.apache.commons.codec/about.properties" />
 		</replace>
+		<!--
 		<replace dir="${buildDirectory}/plugins/" value="1.6.0.${buildId}" token="@Replace_By_Version@">
 			<include name="org.mozilla.rhino/about.properties" />
 		</replace>
 		<replace dir="${buildDirectory}/plugins/" value="1.4.6.${buildId}" token="@Replace_By_Version@">
 			<include name="com.lowagie.itext/about.properties" />
 		</replace>
+		-->
 	</target>
 
 	<!-- ===================================================================== -->

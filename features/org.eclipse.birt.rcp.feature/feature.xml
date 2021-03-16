@@ -24,19 +24,16 @@
    </url>
 
    <requires>
-      <import plugin="com.lowagie.text"/>
       <import plugin="javax.el"/>
       <import plugin="javax.servlet.jsp"/>
       <import plugin="javax.servlet"/>
       <import plugin="javax.wsdl"/>
       <import plugin="javax.xml.rpc"/>
       <import plugin="javax.xml.soap"/>
-      <import plugin="javax.xml.stream"/>
       <import plugin="org.apache.axis"/>
       <import plugin="org.apache.commons.discovery"/>
       <import plugin="org.apache.commons.logging"/>
       <import plugin="org.apache.jasper.glassfish"/>
-      <import plugin="org.apache.lucene.analysis"/>
       <import plugin="org.apache.lucene.core"/>
       <import plugin="org.apache.poi"/>
       <import plugin="org.apache.xerces"/>
@@ -61,9 +58,7 @@
       <import plugin="org.eclipse.datatools.oda.cshelp"/>
       <import plugin="org.eclipse.ecf.filetransfer"/>
       <import plugin="org.eclipse.ecf.identity"/>
-      <import plugin="org.eclipse.ecf.provider.filetransfer.ssl"/>
       <import plugin="org.eclipse.ecf.provider.filetransfer"/>
-      <import plugin="org.eclipse.ecf.ssl"/>
       <import plugin="org.eclipse.ecf"/>
       <import plugin="org.eclipse.equinox.frameworkadmin.equinox"/>
       <import plugin="org.eclipse.equinox.frameworkadmin"/>
@@ -115,6 +110,9 @@
       <import plugin="org.sat4j.pb"/>
       <import plugin="uk.co.spudsoft.birt.emitters.excel"/>
       <import plugin="org.eclipse.equinox.p2.reconciler.dropins"/>
+      <import plugin="wrapped.com.itextpdf.io"/>
+      <import plugin="wrapped.com.itextpdf.kernel"/>
+      <import plugin="wrapped.com.itextpdf.layout"/>
    </requires>
 
    <plugin
