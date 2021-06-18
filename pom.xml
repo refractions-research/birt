@@ -19,7 +19,7 @@
 	<!-- make release builds in particular quicker and more reliable -->
 	<profiles>
 	
-		<profile>
+	<profile>
             <id>2020-12</id>
             <activation>
             	<activeByDefault>true</activeByDefault>
