@@ -45,9 +45,10 @@
                 <mongodb.version>3.2.2.v20181004-1955</mongodb.version>
 				<lucene.version>(3.0.0,9.0.0)</lucene.version>
             </properties>
+        
         </profile>
         
-	    <profile>
+	<profile>
             <id>2019-03</id>
             <properties>
                 <eclipse.release.name>2019-03</eclipse.release.name>
