@@ -35,7 +35,7 @@
 				<wtp.repo.url>https://download.eclipse.org/webtools/downloads/drops/R3.20.0/R-3.20.0-20201201143606/repository/</wtp.repo.url>
                 <!-- http://download.eclipse.org/tools/orbit/downloads/ -->
                 <!-- <orbit.repo.url>https://download.eclipse.org/tools/orbit/downloads/drops/R20201130205003/repository/</orbit.repo.url>-->
-                <orbit.repo.url>https://download.eclipse.org/tools/orbit/downloads/drops/I20210216201023/repository/</orbit.repo.url>
+                <orbit.repo.url>http://download.eclipse.org/tools/orbit/downloads/drops/R20210223232630/repository/</orbit.repo.url>
                 <!-- https://eclipse.org/datatools/downloads.php  -->
                 <dtp.repo.url>https://download.eclipse.org/datatools/updates/1.14.105-SNAPSHOT/repository/</dtp.repo.url>
                 <!-- jetty.repo.url>http://download.eclipse.org/jetty/updates/jetty-bundles-9.x/</jetty.repo.url -->

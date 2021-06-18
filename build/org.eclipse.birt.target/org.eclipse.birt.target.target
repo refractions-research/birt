@@ -49,43 +49,7 @@
 		</location>
 		-->
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-			<!--
-			<unit id="org.apache.batik.anim" version="1.13.0.v20201124-1831"/>
-			<unit id="org.apache.batik.awt.util" version="1.13.0.v20201124-1831"/>
-			<unit id="org.apache.batik.bridge" version="1.13.0.v20201124-1831"/>
-			<unit id="org.apache.batik.codec" version="1.13.0.v20201124-1831"/>
-			<unit id="org.apache.batik.constants" version="1.13.0.v20201124-1831"/>
-			<unit id="org.apache.batik.css" version="1.13.0.v20201124-1831"/>
-			<unit id="org.apache.batik.dom" version="1.13.0.v20201124-1831"/>
-			<unit id="org.apache.batik.dom.svg" version="1.13.0.v20201124-1831"/>
-			<unit id="org.apache.batik.ext" version="1.9.1.v20180227-1645"/>
-			<unit id="org.apache.batik.gvt" version="1.13.0.v20201124-1831"/>
-			<unit id="org.apache.batik.i18n" version="1.13.0.v20201124-1831"/>
-			<unit id="org.apache.batik.parser" version="1.13.0.v20201124-1831"/>
-			<unit id="org.apache.batik.script" version="1.13.0.v20201124-1831"/>
-			<unit id="org.apache.batik.svggen" version="1.13.0.v20201124-1831"/>
-			<unit id="org.apache.batik.transcoder" version="1.13.0.v20201124-1831"/>
-			<unit id="org.apache.batik.xml" version="1.13.0.v20201124-1831"/>
-			<unit id="org.apache.batik.util" version="1.13.0.v20201124-1831"/>
-			-->
-			<!--
-			<unit id="org.apache.batik.pdf" version="1.13.0.v20201124-1831"/>
-			<unit id="org.apache.batik.swing" version="1.13.0.v20201124-1831"/>
-			<unit id="org.apache.batik.util.gui" version="1.9.1.v20180227-1645"/>
-			-->
 			
-			<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20201130205003/repository/"/>
-			
-		</location>
-		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-			<repository location="https://download.eclipse.org/jetty/updates/jetty-bundles-9.x/9.4.35.v20201120/"/>
-			<unit id="org.eclipse.jetty.bundles.f.feature.group" version="9.4.35.v20201120"/>
-		</location>
-		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-			<repository location="https://download.eclipse.org/tools/orbit/downloads/drops/I20210216201023/repository/"/>
-			<!--<unit id="javax.xml.stream" version="1.0.1.v201004272200"/>-->
-			<unit id="org.slf4j.api" version="1.7.30.v20200204-2150"/>
-			<unit id="ch.qos.logback.slf4j" version="1.2.3.v20200428-2012"/>
 			<unit id="org.apache.batik.anim" version="1.13.0.v20201130-1756"/>
 			<unit id="org.apache.batik.anim.source" version="1.13.0.v20201130-1756"/>
 			<unit id="org.apache.batik.awt.util" version="1.13.0.v20201124-1832"/>
@@ -122,6 +86,10 @@
 			<unit id="org.apache.batik.util.source" version="1.13.0.v20200622-2037"/>
 			<unit id="org.apache.batik.xml" version="1.13.0.v20201124-1831"/>
 			<unit id="org.apache.batik.xml.source" version="1.13.0.v20201124-1831"/>
+			
+						<unit id="org.slf4j.api" version="1.7.30.v20200204-2150"/>
+			<unit id="ch.qos.logback.slf4j" version="1.2.3.v20200428-2012"/>
+			
 			<unit id="org.apache.derby" version="10.11.1.1_v201605202053"/>
 			<unit id="org.apache.poi" version="4.1.1.v20200604-1524"/>
 			<unit id="org.apache.poi.ooxml" version="4.1.1.v20200820-1148"/>
@@ -130,7 +98,15 @@
 			<unit id="org.apache.poi.source" version="4.1.1.v20200604-1524"/>
 			<unit id="org.eclipse.orbit.mongodb" version="3.2.2.v20181004-1955"/>
 			<unit id="org.apache.xerces" version="2.12.1.v20210115-0812"/>
+			
+			<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20210223232630/repository/"/>
+			
 		</location>
+		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+			<repository location="https://download.eclipse.org/jetty/updates/jetty-bundles-9.x/9.4.35.v20201120/"/>
+			<unit id="org.eclipse.jetty.bundles.f.feature.group" version="9.4.35.v20201120"/>
+		</location>
+
 		<location includeSource="true" missingManifest="generate" type="Maven">
 			<groupId>com.itextpdf</groupId>
 			<artifactId>kernel</artifactId>
