@@ -90,7 +90,7 @@
 				<lucene.version>(3.0.0,7.2.0)</lucene.version>
             </properties>
         </profile>
-		<profile>
+	<profile>
             <id>photon</id>
             <properties>
                 <eclipse.release.name>photon</eclipse.release.name>
